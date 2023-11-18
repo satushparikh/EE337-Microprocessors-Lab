@@ -1,0 +1,3 @@
+".\Objects\MIDq1.obj" 
+TO ".\Objects\midsem_Q1" 
+PRINT(".\Listings\midsem_Q1.m51") RAMSIZE(256) 

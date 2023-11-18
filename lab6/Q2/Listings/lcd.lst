@@ -1,0 +1,261 @@
+C51 COMPILER V9.60.7.0   LCD                                                               02/26/2023 17:24:03 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN .\Objects\lcd.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lcd.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\lcd.l
+                    -st) TABS(2) OBJECT(.\Objects\lcd.obj)
+
+line level    source
+
+   1          #include <at89c5131.h>
+   2          #include "lcd.h"
+   3          #define MAX_LCD_CHARS 16 // Maximum characters per line on the LCD
+   4          
+   5          unsigned int my_strlen(const unsigned char *str);
+   6          
+   7          void center_pad(const unsigned char *str_to_pad, unsigned char lcd_str[MAX_LCD_CHARS + 1]);
+   8          void bubble_sort(unsigned char arr[], int n);
+   9          // unsigned char str_to_pad="EE337";
+  10          unsigned char display_msg1[MAX_LCD_CHARS + 1];
+  11          unsigned char display_msg2[MAX_LCD_CHARS + 1];
+  12          
+  13          code unsigned char pad1[] = "START PROGRAM"; // Display msg on 1st line of lcd
+  14          code unsigned char pad2[] = "FIRST INPUT";   // Display msg on 2st line of lcd
+  15          code unsigned char pad3[] = "NEXT INPUT";    // Display msg on 2st line of lcd
+  16          code unsigned char pad4[] = "SORTING...";    // Display msg on 2st line of lcd
+  17          code unsigned char pad5[] = "SORTING";       // Display msg on 2st line of lcd
+  18          code unsigned char pad6[] = "COMPLETED";     // Display msg on 2st line of lcd
+  19          code unsigned char pad7[] = "NUMBER TO BE";  // Display msg on 2st line of lcd
+  20          code unsigned char pad8[] = "SEARCHED";      // Display msg on 2st line of lcd
+  21          code unsigned char pad9[] = "THE INDEX IS";  // Display msg on 2st line of lcd
+  22          code unsigned char pad10[] = "NUMBER";       // Display msg on 2st line of lcd
+  23          code unsigned char pad11[] = "NOT FOUND";    // Display msg on 2st line of lcd
+  24          
+  25          unsigned char input[5];
+  26          unsigned char it;
+  27          unsigned char search;
+  28          unsigned char index_at_which_present = 0xf0;
+  29          void main()
+  30          {
+  31   1          lcd_init();
+  32   1          lcd_cmd(0x80); // Move cursor to first line
+  33   1          msdelay(4);
+  34   1      
+  35   1          center_pad(pad1, display_msg1);
+  36   1          P1 = 0x0F; // no leds should glow while START PROGRAM is being displayed for 5s but making first 4 bit
+             -s as input port
+  37   1          lcd_write_string(display_msg1);
+  38   1          msdelay(8000);
+  39   1      
+  40   1          lcd_cmd(0x01);                  // LCD clear
+  41   1          center_pad(pad2, display_msg1); // pads FIRST NUMBER
+  42   1          lcd_write_string(display_msg1);
+  43   1          msdelay(8000);
+  44   1      
+  45   1          input[0] = P1;
+  46   1          input[0] &= 0x0F;
+  47   1      
+  48   1          // turn off all the leds for 1s and make P1 an input port
+  49   1          P1 = 0x0F;
+  50   1          lcd_cmd(0x01);                  // clears the lCd
+  51   1          center_pad(pad3, display_msg1); // padding next input
+  52   1          msdelay(1000);
+  53   1      
+C51 COMPILER V9.60.7.0   LCD                                                               02/26/2023 17:24:03 PAGE 2   
+
+  54   1          for (it = 1; it <= 4; it++)             // taking next 4 inputs
+  55   1          {                                       // lcd:next input    input[i] on dp0-3     and on leds show in
+             -put[i-1]
+  56   2              P1 = ((input[it - 1] << 4) | 0x0F); // displaying previous input on leds and making first four bit
+             -s as an input port
+  57   2              msdelay(5);                         // not needed but written
+  58   2              lcd_write_string(display_msg1);
+  59   2              msdelay(8000);
+  60   2              input[it] = P1 & 0x0F; // store the input
+  61   2      
+  62   2              // turn off all the leds for 1s and make P1 an input port
+  63   2              P1 = 0x0F;
+  64   2              lcd_cmd(0x01); // clears the led
+  65   2              msdelay(1000);
+  66   2          }
+  67   1          // display SORTING ON lcd and last input number on the leds
+  68   1          P1 = ((input[4] << 4) | 0x0F);
+  69   1          center_pad(pad4, display_msg1); // displaying  SORTING...
+  70   1          lcd_write_string(display_msg1);
+  71   1          msdelay(8000);
+  72   1      
+  73   1          P1 = 0x0F;     // MAKING P1 4 BIT INPUT PORT AND KEEPING ALL LEDS OFF
+  74   1          lcd_cmd(0x01); // clears the lCd
+  75   1          msdelay(1000);
+  76   1      
+  77   1          // SORTING THE FIVE INPUTS IN ASCENDING ORDER
+  78   1          bubble_sort(input, 5);
+  79   1      
+  80   1          // lcd is already cleared and cursor is at position[0][0]
+  81   1          //  show  SORTING /N COMPLETED
+  82   1          lcd_cmd(0x80); // Move cursor to first line
+  83   1          msdelay(4);
+  84   1          center_pad(pad5, display_msg1);
+  85   1          lcd_write_string(display_msg1);
+  86   1      
+  87   1          lcd_cmd(0xC0); // Move cursor to 2nd line of LCD
+  88   1          msdelay(4);
+  89   1          center_pad(pad6, display_msg2);
+  90   1          lcd_write_string(display_msg2);
+  91   1      
+  92   1          //     Sort the five numbers in ascending order and display it on LEDs, each for 5
+  93   1          // seconds with a pause of 1 second with all LEDs off.
+  94   1          for (it = 0; it < 4; it++)
+  95   1          {
+  96   2              // P1 = (input[it] & 0xf0);
+  97   2              P1 = (input[it] << 4);
+  98   2              msdelay(8000);
+  99   2      
+ 100   2              P1 = 0x00;
+ 101   2              msdelay(1000);
+ 102   2          }
+ 103   1          //  After displaying the sorted array, give a pause of 1 second with all LEDs off.
+ 104   1          // Then turn on all the LEDs for 5 seconds where you have to take the input to be searched and display
+             - ”NUMBER TO BE” in the first row and
+ 105   1          // ”SEARCHED” in the second row of the LCD.
+ 106   1          P1 = 0xFF;     // turning on all leds and making port 1 input also
+ 107   1          lcd_cmd(0x01); // clears the led
+ 108   1          lcd_cmd(0x80); // Move cursor to first line
+ 109   1          msdelay(4);
+ 110   1          center_pad(pad7, display_msg1);// pad7[] = "NUMBER TO BE";
+ 111   1          lcd_write_string(display_msg1);
+ 112   1      
+C51 COMPILER V9.60.7.0   LCD                                                               02/26/2023 17:24:03 PAGE 3   
+
+ 113   1          lcd_cmd(0xC0); // Move cursor to 2nd line of LCD
+ 114   1          msdelay(4);
+ 115   1          center_pad(pad8, display_msg2);
+ 116   1          lcd_write_string(display_msg2);
+ 117   1          //turn on all leds when message is showing number to be searched
+ 118   1          P1=0xFF;
+ 119   1          msdelay(8000);
+ 120   1          // pad7,pad 8 number to be \n searched
+ 121   1          search = P1 & 0x0F;//number which is to be searched
+ 122   1          // Give a pause of 1 second by clearing both LEDs and LCD.
+ 123   1          msdelay(4);
+ 124   1          lcd_cmd(0x01); // clears the led
+ 125   1          P1 = 0x00;
+ 126   1      
+ 127   1          //      Perform any search algorithm on the sorted array of five numbers.
+ 128   1          // • If the number is present in the array, display the index at which the number
+ 129   1          // is present (assume array index starts from 1) on the LEDs and display ”THE
+ 130   1          // INDEX IS” on LCD.
+ 131   1          // • If the number is absent, ON all the LEDs and display ”NUMBER” in the first
+ 132   1          // row and ”NOT FOUND” in the second row of the LCD.
+ 133   1          for (it = 0; it < 5; it++)
+ 134   1          {
+ 135   2              if (search == input[it])
+ 136   2              {
+ 137   3                  index_at_which_present = it + 1;
+ 138   3                  break;
+ 139   3              }
+ 140   2          }
+ 141   1      
+ 142   1          // unsigned char index_at_which_present=0xf0;
+ 143   1          if (index_at_which_present == 0xf0) // if number not present turn on all leds with lcd saying NUMBER \
+             -n NOT FOUND
+ 144   1          {
+ 145   2              P1 = index_at_which_present;
+ 146   2              lcd_cmd(0x80); // Move cursor to first line
+ 147   2              msdelay(4);
+ 148   2              center_pad(pad10, display_msg1);
+ 149   2              lcd_write_string(display_msg1);
+ 150   2      
+ 151   2              lcd_cmd(0xC0); // Move cursor to 2nd line of LCD
+ 152   2              msdelay(4);
+ 153   2              center_pad(pad11, display_msg2);
+ 154   2              lcd_write_string(display_msg2);
+ 155   2          }
+ 156   1          else
+ 157   1          {
+ 158   2              P1 = index_at_which_present << 4;
+ 159   2              lcd_cmd(0x80); // Move cursor to first line
+ 160   2              msdelay(4);
+ 161   2              center_pad(pad9, display_msg1);
+ 162   2              lcd_write_string(display_msg1);
+ 163   2          }
+ 164   1          while (1);
+ 165   1      }
+ 166          
+ 167          void bubble_sort(unsigned char arr[], int n)
+ 168          {
+ 169   1          int i, j;
+ 170   1          unsigned char temp;
+ 171   1          for (i = 0; i < n - 1; i++)
+ 172   1          {
+ 173   2              for (j = 0; j < n - i - 1; j++)
+C51 COMPILER V9.60.7.0   LCD                                                               02/26/2023 17:24:03 PAGE 4   
+
+ 174   2              {
+ 175   3                  if (arr[j] > arr[j + 1])
+ 176   3                  {
+ 177   4                      // swap arr[j] and arr[j+1]
+ 178   4                      temp = arr[j];
+ 179   4                      arr[j] = arr[j + 1];
+ 180   4                      arr[j + 1] = temp;
+ 181   4                  }
+ 182   3              }
+ 183   2          }
+ 184   1      }
+ 185          
+ 186          unsigned int my_strlen(const unsigned char *str)
+ 187          {
+ 188   1          unsigned int len = 0;
+ 189   1          while (str[len] != '\0')
+ 190   1          {
+ 191   2              len++;
+ 192   2          }
+ 193   1          return len;
+ 194   1      }
+ 195          
+ 196          void center_pad(const unsigned char *str_to_pad, unsigned char lcd_str[MAX_LCD_CHARS + 1])
+ 197          {
+ 198   1          unsigned int len = my_strlen(str_to_pad);
+ 199   1          unsigned int spaces = MAX_LCD_CHARS - len;
+ 200   1          unsigned int left_spaces = spaces / 2;
+ 201   1          unsigned int right_spaces = spaces - left_spaces;
+ 202   1          unsigned int i;
+ 203   1      
+ 204   1          // Pad the left side with spaces
+ 205   1          for (i = 0; i < left_spaces; i++)
+ 206   1          {
+ 207   2              lcd_str[i] = ' ';
+ 208   2          }
+ 209   1      
+ 210   1          // Copy the input string into the center of the LCD string
+ 211   1          for (i = 0; i < len; i++)
+ 212   1          {
+ 213   2              lcd_str[left_spaces + i] = str_to_pad[i];
+ 214   2          }
+ 215   1      
+ 216   1          // Pad the right side with spaces
+ 217   1          for (i = left_spaces + len; i < MAX_LCD_CHARS; i++)
+ 218   1          {
+ 219   2              lcd_str[i] = ' ';
+ 220   2          }
+ 221   1      
+ 222   1          // Add a null terminator to the end of the string
+ 223   1          lcd_str[MAX_LCD_CHARS] = '\0';
+ 224   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1115    ----
+   CONSTANT SIZE    =    118    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     42      28
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+C51 COMPILER V9.60.7.0   LCD                                                               02/26/2023 17:24:03 PAGE 5   
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

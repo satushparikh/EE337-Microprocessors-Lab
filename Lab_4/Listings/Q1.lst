@@ -1,0 +1,272 @@
+A51 MACRO ASSEMBLER  Q1                                                                   01/29/2023 15:44:59 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\Q1.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE Q1.asm SET(SMALL) DEBUG PRINT(.\Listings\Q1.lst) OBJECT(.\Objects\Q1.ob
+                      j) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;// -- DO NOT CHANGE ANYTHING UNTIL THE **** LINE--;//
+0000                   2     ORG 0H
+0000 020100            3     LJMP MAIN
+0100                   4     ORG 100H
+0100                   5     MAIN:
+0100 3159              6     CALL TAKE_INP
+0102 318F              7     CALL QUANT_ENC
+0104 31BA              8     CALL LED_DISP
+0106 80FE              9     HERE: SJMP HERE
+0130                  10     ORG 130H
+                      11     
+                      12      
+                      13     ;new subroutine
+0130                  14     DELAY:;5s = 20 * 250ms
+                      15     
+0130 C003             16     push 03h
+0132 7B14             17     mov r3, #20;20 BUT 2 TEMPORARILY
+0134 313C             18     h3: acall delay_250ms
+0136 DBFC             19     djnz r3, h3
+0138 D003             20     pop 03h
+013A 3150             21     acall delay_250us
+                      22     
+013C                  23     delay_250ms:;250ms = 250 * 1ms take care that 250 is written in decimal appropriately
+013C C002             24     push 02h
+013E 7AFA             25     mov r2, #250
+0140 3146             26     h2: acall delay_1ms
+0142 DAFC             27     djnz r2, h2
+0144 D002             28     pop 02h
+                      29     ; ret
+                      30     
+0146                  31     delay_1ms:
+0146 C001             32     push 01h
+0148 7904             33     mov r1, #4
+014A 3150             34     h1: acall delay_250us
+014C D9FC             35     djnz r1, h1
+014E D001             36     pop 01h
+                      37     ; ret
+                      38     
+0150                  39     delay_250us:
+0150 C000             40     push 00h
+                      41     ; mov r0, #244
+0152 78B9             42     mov r0, #185
+0154 D8FE             43     h0: djnz r0, h0
+0156 D000             44     pop 00h
+                      45     ; ret
+                      46     
+                      47     
+0158 22               48     ret
+                      49     
+                      50     ;new subroutine
+0159                  51     TAKE_INP:
+0159 740F             52             MOV A,#0Fh
+015B F590             53             MOV P1,A;making p1 an input port
+015D 7860             54             MOV R0,#60H   ;starting location where number will be stored
+015F 7C04             55             MOV R4,#04H;to create for loop for taking 4 input numbers
+0161 7E01             56             MOV R6,#01H 
+0163                  57     INPUT:
+A51 MACRO ASSEMBLER  Q1                                                                   01/29/2023 15:44:59 PAGE     2
+
+                      58     ;LED UPDATE->TIME-DELAY(AND MAKING INPUT PORT)->MSB INPUT->LED UPDATE->TIME-DELAY(INPUT POR
+                             T)-> LSB INPUT
+                      59         ;LED UPDATE
+0163 EE               60         MOV A,R6;
+0164 C4               61         SWAP A;INTERCHANGES NIBBLES 
+                      62         ; MOV P1,A;
+0165 0E               63         INC R6;
+                      64         ;TIME-DELAY;
+0166 240F             65         ADD A,#0FH;
+0168 F590             66         MOV P1,A
+016A 120130           67         LCALL DELAY
+016D 120130           68         LCALL DELAY
+                      69         ;MSB INPUT
+0170 E590             70         MOV A,P1;TAKING MSB
+0172 540F             71         ANL A,#0FH; RETAINING ONLY LAST 4 BITS WHICH CONSTITUTE MSB OF INPUT NUMBER
+0174 FA               72         MOV R2,A ; R2 STORES MSB
+                      73         ; MOV A,#0Fh
+                      74         ; MOV P1,A;MAKING P1 AN INPUT PORT AGAIN
+                      75         ;LED-UPDATE
+0175 EE               76         MOV A,R6;CHANGED MOV->ADD
+0176 C4               77         SWAP A;INTERCHANGES NIBBLES 
+0177 0E               78         INC R6;
+                      79         ;TIME-DELAY
+0178 240F             80         ADD A,#0FH;CHANGED ADD A,#0FH TO ADD A,#0FH
+017A F590             81         MOV P1,A
+017C 120130           82         LCALL DELAY
+017F 120130           83         LCALL DELAY
+                      84         ;LSB INPUT
+0182 E590             85         MOV A,P1;TAKING LSB
+0184 540F             86         ANL A,#0FH; RETAINING ONLY LAST 4 BITS
+0186 FB               87         MOV R3,A;R3 STORES LSB
+                      88         ; MOV A,#0FH 
+                      89         ; MOV P1,A ;MAKING P1 AN INPUT PORT AGAIN
+                      90         
+                      91         
+0187 EA               92         MOV A,R2  ;TAKING 0000_4BITSofMSB
+0188 C4               93         SWAP A 
+0189 4B               94         ORL A,R3  ;
+018A F6               95         MOV @R0,A ;TAKING INPUT TO MEMORY LOCATION POINTED BY R0
+018B 08               96         INC R0 ;
+                      97     
+018C DCD5             98         DJNZ R4,INPUT;INPUT ARE STORED IN 60,61,62,63;TAKING INPUT 4 TIMES
+018E 22               99     RET 
+                     100     ;new subroutine
+018F                 101     QUANT_ENC:
+018F 7D05            102     MOV R5,#05;UNIT DIGIT IS 5 FOR ALL OF 5,15,25,35
+0191 7C04            103     MOV R4,#04H;ENCODING 4 NUMBERS   
+0193 7860            104     MOV R0 , #60H;FIRST NUMBER IS STORED AT MEMORY LOCATION 60
+                     105     
+0195                 106     LOO:  
+0195 E6              107     MOV A ,@R0
+0196 C3              108     CLR C  
+0197 941E            109     SUBB A,#30
+0199 500C            110     JNC OUT35
+                     111     
+019B E6              112     MOV A ,@R0 
+019C 75F00A          113     MOV B,#10
+019F 84              114     DIV AB
+                     115     
+01A0 75F00A          116     MOV B,#10
+01A3 A4              117     MUL AB 
+                     118     
+01A4 2D              119     ADD A,R5 
+                     120     
+01A5 8002            121     SJMP UPDATE
+                     122     
+A51 MACRO ASSEMBLER  Q1                                                                   01/29/2023 15:44:59 PAGE     3
+
+01A7                 123     OUT35:
+01A7 7423            124     MOV A,#35
+                     125     
+01A9                 126     UPDATE:
+01A9 F6              127     MOV @R0,A 
+01AA 08              128     INC R0 
+01AB DCE8            129     DJNZ R4, LOO
+                     130     
+01AD 7860            131     MOV R0,#60H 
+01AF 7970            132     MOV R1,#70H ; STORING THE ENCODED NUMBERS AT MEMORY LOCATIONS STARTING FROM 70
+01B1 7E04            133     MOV R6,#04H ; ENCODING 4 NUMBERS
+                     134     
+01B3                 135     ANSWER:
+01B3 E6              136     MOV A,@R0                
+01B4 F7              137     MOV @R1,A    
+                     138           
+01B5 08              139     INC R0
+01B6 09              140     INC R1    
+01B7 DEFA            141     DJNZ R6, ANSWER
+                     142     
+01B9 22              143     RET
+                     144     
+                     145     ;NEW SUBROUTINE
+01BA                 146     LED_DISP:
+                     147     
+01BA                 148     AGAIN:
+01BA 7C04            149          MOV R4,#04H ;
+01BC 7870            150          MOV R0,#70H;
+01BE                 151     NEXT:;TURN OF ALL LEDs
+01BE C294            152          CLR P1.4;
+01C0 C295            153          CLR P1.5;
+01C2 C296            154          CLR P1.6;
+01C4 C297            155          CLR P1.7;
+                     156         
+01C6 75F00A          157          MOV B,#10;IN DECIMAL
+01C9 E6              158          MOV A,@R0;
+01CA 84              159          DIV AB;A CONTAINS EITHER 0,1,2,3
+01CB 600B            160          JZ SET_P1_4;CHECKS IF A IS 0
+01CD 14              161          DEC A;
+01CE 600D            162          JZ SET_P1_5;CHECKS IF A IS 1
+01D0 14              163          DEC A;
+01D1 600F            164          JZ SET_P1_6;CHECKS IF A IS 2
+                     165          ; SINCE A WAS NOT ONE OF 0,1,2 IT WOULD BE 2
+01D3 D297            166          SETB P1.7;
+01D5 0201E4          167          LJMP WAIT; *****************
+                     168     
+01D8                 169     SET_P1_4:
+01D8 D294            170          SETB P1.4;
+01DA 0201E4          171          LJMP WAIT;
+                     172     
+01DD                 173     SET_P1_5:
+01DD D295            174          SETB P1.5;
+01DF 0201E4          175          LJMP WAIT;
+                     176     
+01E2                 177     SET_P1_6:
+01E2 D296            178          SETB P1.6;
+                     179         ;  LJMP WAIT;
+                     180     
+01E4                 181     WAIT: 
+01E4 08              182         INC R0;FOR CHECKING NEXT ENCODED BIT IN NEXT ITERATION INC R0 BY 1
+01E5 120130          183         LCALL DELAY;
+01E8 DCD4            184     DJNZ R4,NEXT;
+01EA 1201BA          185     LCALL AGAIN;
+                     186     
+                     187     
+01ED 22              188     RET
+A51 MACRO ASSEMBLER  Q1                                                                   01/29/2023 15:44:59 PAGE     4
+
+                     189     END
+                             
+                             
+                             ; delay_250ms:;250ms = 250 * 1ms take care that 250 is written in decimal appropriately
+                             ; push 00h
+                             ; mov r0, #250
+                             ; h2: acall delay_1ms
+                             ; djnz r0, h2
+                             ; pop 00h
+                             ; ret
+                             
+                             ; delay_1ms:
+                             ; push 00h
+                             ; mov r0, #4
+                             ; h2: acall delay_250us
+                             ; djnz r0, h2
+                             ; pop 00h
+                             ; ret
+                             
+                             ; delay_250us:
+                             ; push 00h
+                             ; mov r0, #244
+                             ; h1: djnz r0, h1
+                             ; pop 00h
+                             ; ret
+                             
+                              
+A51 MACRO ASSEMBLER  Q1                                                                   01/29/2023 15:44:59 PAGE     5
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+AGAIN. . . . . . .  C ADDR   01BAH   A   
+ANSWER . . . . . .  C ADDR   01B3H   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+DELAY. . . . . . .  C ADDR   0130H   A   
+DELAY_1MS. . . . .  C ADDR   0146H   A   
+DELAY_250MS. . . .  C ADDR   013CH   A   
+DELAY_250US. . . .  C ADDR   0150H   A   
+H0 . . . . . . . .  C ADDR   0154H   A   
+H1 . . . . . . . .  C ADDR   014AH   A   
+H2 . . . . . . . .  C ADDR   0140H   A   
+H3 . . . . . . . .  C ADDR   0134H   A   
+HERE . . . . . . .  C ADDR   0106H   A   
+INPUT. . . . . . .  C ADDR   0163H   A   
+LED_DISP . . . . .  C ADDR   01BAH   A   
+LOO. . . . . . . .  C ADDR   0195H   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+NEXT . . . . . . .  C ADDR   01BEH   A   
+OUT35. . . . . . .  C ADDR   01A7H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+QUANT_ENC. . . . .  C ADDR   018FH   A   
+SET_P1_4 . . . . .  C ADDR   01D8H   A   
+SET_P1_5 . . . . .  C ADDR   01DDH   A   
+SET_P1_6 . . . . .  C ADDR   01E2H   A   
+TAKE_INP . . . . .  C ADDR   0159H   A   
+UPDATE . . . . . .  C ADDR   01A9H   A   
+WAIT . . . . . . .  C ADDR   01E4H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

@@ -1,0 +1,243 @@
+A51 MACRO ASSEMBLER  MIDQ1                                                                02/12/2023 10:47:21 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\MIDq1.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE MIDq1.ASM SET(SMALL) DEBUG PRINT(.\Listings\MIDq1.lst) OBJECT(.\Objects
+                      \MIDq1.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;// -- DO NOT CHANGE ANYTHING UNTIL THE **** LINE--;//
+0000                   2     ORG 0H
+0000 020100            3     LJMP MAIN
+0100                   4     ORG 100H
+0100                   5     MAIN:
+                       6     
+0100 7571AD            7     MOV 71H,#0ADH; WHICH IS 160+13=173
+0103 7570D8            8     MOV 70H,#216     ; WHICH IS 216
+                       9     
+0106 3130             10     CALL FINDE
+                      11     ; CALL TAKE_INP
+                      12     ; CALL QUANT_ENC
+0108 3159             13     CALL LED_DISP
+010A 80FE             14     HERE: SJMP HERE
+0130                  15     ORG 130H
+                      16     
+0130                  17     FINDE: 
+0130 7A01             18           MOV R2,#01H; THIS IS OUR ENCRYPTION COEFFICIENT
+0132 E571             19           MOV A,71H 
+0134                  20     NEXT_ITERATION:
+0134 8570F0           21           MOV B,70H
+                      22         ;   MOV R6,A 
+0137 84               23           DIV AB
+0138 E5F0             24           MOV A,B
+                      25         ;   MOV A,R6
+013A AFF0             26           MOV R7,B ;STORES REMAINDER
+013C BF0103           27           CJNE R7,#01H,REM_NOT_ONE
+                      28           ;SINCE WE HAVE GOT REMAINDER AS 1 IF ITS NOT JUMPING
+013F 8A72             29           MOV 72H,R2 
+0141 22               30           RET 
+0142                  31     REM_NOT_ONE:
+0142 C3               32           CLR C  ;
+0143 2571             33           ADD A,71H
+                      34         ;   INC A;ADDED LATER ON
+                      35         ;   MOV C,OV; TAKING OVERFLOW FLAG INTO C AS INSTRUCTIONS LIKE JC EXIST
+                      36           
+0145 500D             37           JNC NO_OVERFLOW
+                      38           ;IF OVERFLOW ADD 255 MOD 216
+                      39           
+                      40         ;   ADD A,#40
+0147 FE               41           MOV R6,A ;
+0148 74FF             42           MOV A,#0FFH ;
+014A 8570F0           43           MOV B,70H
+014D C3               44               CLR C
+014E 95F0             45           SUBB A,B ;
+0150 FD               46           MOV R5,A ; THIS IS 39 HERE 
+0151 0D               47           INC R5 
+0152 EE               48           MOV A,R6
+0153 2D               49           ADD A,R5 
+                      50     
+0154                  51     NO_OVERFLOW: ;NOTHING HAS TO BE DONE OTHER THAN INCREMENTING R2
+0154 0A               52           INC R2 
+                      53     
+0155 120134           54           LCALL NEXT_ITERATION
+0158 22               55      RET
+                      56     
+0159                  57     LED_DISP:
+A51 MACRO ASSEMBLER  MIDQ1                                                                02/12/2023 10:47:21 PAGE     2
+
+                      58     ;UPPER 4 BITS 72H
+0159 E572             59     MOV A,72H;
+015B 54F0             60     ANL A,#0F0H;
+015D F590             61     MOV P1,A; 
+015F 3175             62     ACALL delay_5s
+                      63     
+0161 759000           64     MOV P1,#000H
+0164 3180             65     ACALL delay_1s
+                      66     
+0166 E572             67     MOV A,72H;
+0168 540F             68     ANL A,#0FH;
+016A C4               69     SWAP A
+016B F590             70     MOV P1,A; 
+016D 3175             71     ACALL delay_5s
+                      72     
+016F 759000           73     MOV P1,#000H
+0172 3180             74     ACALL delay_1s
+                      75     
+0174 22               76     RET 
+0175                  77     delay_5s:
+0175 C000             78             push 00h
+0177 7819             79             mov r0, #25
+0179 318B             80             hE5: acall delay_200ms   
+017B D8FC             81             djnz r0, hE5
+017D D000             82             pop 00h
+017F 22               83     ret
+0180                  84     delay_1s:
+0180 C000             85             push 00h
+0182 7805             86             mov r0, #5
+0184 318B             87             hE55: acall delay_200ms   
+0186 D8FC             88             djnz r0, hE55
+0188 D000             89             pop 00h
+018A 22               90     ret
+018B                  91     delay_200ms:
+018B C000             92             push 00h
+018D 78C8             93             mov r0, #200
+018F 3196             94             hE4: acall delay_1ms   
+0191 D8FC             95             djnz r0, hE4
+0193 D000             96             pop 00h
+0195 22               97     ret
+0196                  98     delay_1ms:
+0196 C000             99             push 00h
+0198 7804            100             mov r0, #4
+019A 31A1            101             hE2: acall delay_250us
+019C D8FC            102             djnz r0, hE2
+019E D000            103             pop 00h
+01A0 22              104     ret
+                     105     
+01A1                 106     delay_250us:
+01A1 C000            107     push 00h
+01A3 78F4            108     mov r0, #244
+01A5 D8FE            109     h1: djnz r0, h1
+01A7 D000            110     pop 00h
+01A9 22              111     ret
+                     112     
+                     113     END
+                             ; DELAY:;5s = 20 * 250ms
+                             
+                             ; push 03h
+                             ; mov r3, #20;20 BUT 2 TEMPORARILY
+                             ; h3: acall delay_250ms
+                             ; djnz r3, h3
+                             ; pop 03h
+                             ; acall delay_250us
+                             
+                             ; delay_250ms:;250ms = 250 * 1ms take care that 250 is written in decimal appropriately
+A51 MACRO ASSEMBLER  MIDQ1                                                                02/12/2023 10:47:21 PAGE     3
+
+                             ; push 02h
+                             ; mov r2, #250
+                             ; h2: acall delay_1ms
+                             ; djnz r2, h2
+                             ; pop 02h
+                             ; ; ret
+                             
+                             ; delay_1ms:
+                             ; push 01h
+                             ; mov r1, #4
+                             ; h1: acall delay_250us
+                             ; djnz r1, h1
+                             ; pop 01h
+                             ; ; ret
+                             
+                             ; delay_250us:
+                             ; push 00h
+                             ; ; mov r0, #244
+                             ; mov r0, #185
+                             ; h0: djnz r0, h0
+                             ; pop 00h
+                             ; ; ret
+                             
+                             
+                             ; ret
+                             
+                              
+                             ; LED_DISP:
+                             
+                             ; AGAIN:
+                             ;      MOV R4,#04H ;
+                             ;      MOV R0,#70H;
+                             ; NEXT:;TURN OF ALL LEDs
+                             ;      CLR P1.4;
+                             ;      CLR P1.5;
+                             ;      CLR P1.6;
+                             ;      CLR P1.7;
+                                 
+                             ;      MOV B,#10;IN DECIMAL
+                             ;      MOV A,@R0;
+                             ;      DIV AB;A CONTAINS EITHER 0,1,2,3
+                             ;      JZ SET_P1_4;CHECKS IF A IS 0
+                             ;      DEC A;
+                             ;      JZ SET_P1_5;CHECKS IF A IS 1
+                             ;      DEC A;
+                             ;      JZ SET_P1_6;CHECKS IF A IS 2
+                             ;      ; SINCE A WAS NOT ONE OF 0,1,2 IT WOULD BE 2
+                             ;      SETB P1.7;
+                             ;      LJMP WAIT; *****************
+                             
+                             ; SET_P1_4:
+                             ;      SETB P1.4;
+                             ;      LJMP WAIT;
+                             
+                             ; SET_P1_5:
+                             ;      SETB P1.5;
+                             ;      LJMP WAIT;
+                             
+                             ; SET_P1_6:
+                             ;      SETB P1.6;
+                             ;     ;  LJMP WAIT;
+                             
+                             ; WAIT: 
+                             ;     INC R0;FOR CHECKING NEXT ENCODED BIT IN NEXT ITERATION INC R0 BY 1
+                             ;     LCALL DELAY;
+                             ; DJNZ R4,NEXT;
+A51 MACRO ASSEMBLER  MIDQ1                                                                02/12/2023 10:47:21 PAGE     4
+
+                             ; LCALL AGAIN;
+                             
+                             
+                             ; RET
+                              
+A51 MACRO ASSEMBLER  MIDQ1                                                                02/12/2023 10:47:21 PAGE     5
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+B. . . . . . . . .  D ADDR   00F0H   A   
+DELAY_1MS. . . . .  C ADDR   0196H   A   
+DELAY_1S . . . . .  C ADDR   0180H   A   
+DELAY_200MS. . . .  C ADDR   018BH   A   
+DELAY_250US. . . .  C ADDR   01A1H   A   
+DELAY_5S . . . . .  C ADDR   0175H   A   
+FINDE. . . . . . .  C ADDR   0130H   A   
+H1 . . . . . . . .  C ADDR   01A5H   A   
+HE2. . . . . . . .  C ADDR   019AH   A   
+HE4. . . . . . . .  C ADDR   018FH   A   
+HE5. . . . . . . .  C ADDR   0179H   A   
+HE55 . . . . . . .  C ADDR   0184H   A   
+HERE . . . . . . .  C ADDR   010AH   A   
+LED_DISP . . . . .  C ADDR   0159H   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+NEXT_ITERATION . .  C ADDR   0134H   A   
+NO_OVERFLOW. . . .  C ADDR   0154H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+REM_NOT_ONE. . . .  C ADDR   0142H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

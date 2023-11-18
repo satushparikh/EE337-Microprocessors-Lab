@@ -1,0 +1,134 @@
+; ORG 050H
+; DB 0FCH,05H,76H
+; DB 28
+
+; END
+
+ORG 0H
+LJMP MAIN
+ORG 100H
+MAIN:
+CALL FILT
+HERE: SJMP HERE
+ORG 130H
+; *****************
+FILT:
+; MOV R0,#60 
+; MOV R0,60 
+MOV R0,#60H 
+MOV R1,#70H 
+MOV R6,#08H
+;LABEL WILL BE HERE
+ITERATE:
+MOV R3,#03H
+; CLR A IT SHOULD NOT BE WRITTEN HERE
+; MOV R2,R0 GIVING ERROR
+MOV A,R0
+MOV R2,A
+CLR A ;IT SHOULD NOT BE WRITTEN HERE
+; ADD A,@R0
+ADD A,@R0
+MOV R7,A
+
+CHECK_INDEX:
+CLR C
+DEC R0
+MOV A,R0
+; SUBB A,#60
+SUBB A,#60H
+;DIDN'T WRITE THIS EARLIER
+MOV A,R7
+
+JC FINAL;JUMP IF CARRY IS SET
+; MOV A,R7 REDUNDANT
+; ADD A,R0
+ADD A,@R0
+MOV R7,A
+
+DJNZ R3,CHECK_INDEX
+
+FINAL :
+MOV B,#04
+DIV AB
+; MOV R1,A
+MOV @R1,A
+
+INC R1    
+; MOV R0,R2 GIVING ERROR
+MOV A,R2
+MOV R0,A
+INC R0
+
+DJNZ R6,ITERATE
+
+
+; E char I:60h = 56h,1Ah,33h,4Dh,46h,02h,4Eh,56h
+; E char I:60h = 15h,1Ch,28h,3Ch,38h,32h,38h,3Bh
+; E char I:60h = 04h,24h,38h,11h,3Ah,2Bh,0Eh,69h
+RET
+END
+
+; ORG 0H
+; LJMP MAIN
+; ORG 100H
+; MAIN:
+; CALL QUANT
+; HERE: SJMP HERE
+; ORG 130H
+; ; *****************
+; QUANT:
+; ; ADD YOUR CODE HERE
+; MOV R5,#05
+; MOV R4,#08H   
+; MOV R0 , #60H
+; LOO :  
+; MOV A ,@R0
+; CLR C  
+; SUBB A,#30
+; JNC OUT35
+; MOV A ,@R0 
+; MOV B,#10
+; DIV AB
+; MOV B,#10
+; MUL AB 
+; ADD A,R5 
+; SJMP UPDATE
+
+
+; OUT35:
+; MOV A,#35
+
+; UPDATE:
+; MOV @R0,A 
+; INC R0 
+; DJNZ R4, LOO
+; ; MOV A ,@R0 
+; ; MOV B,#10
+; ; DIV AB
+; ; MOV B,#10
+; ; MUL AB 
+; ; ADD A,R5 
+; ; MOV @R0,A 
+; ; INC R0 
+; ; DJNZ R4, LOO
+
+; MOV R0,#60H 
+; MOV R1,#70H 
+; MOV R6,#08H
+
+; ANSWER:
+; ; MOV @R1,@R0             invalid    
+; MOV A,@R0                ;try to work with R0 and R1
+; MOV @R1,A    ;THIS TYPE OF SYNTAX IS ONLY VALID FOR R0 AND R1            
+; ; MOV A,@R4                ;GIVING SYNTAX ERROR
+; ; MOV @R5,A    THIS TYPE OF SYNTAX IS ONLY VALID FOR R0 AND R1            
+; INC R0
+; INC R1    
+; DJNZ R6, ANSWER
+
+; ; E char I:60h = 11h,2Ah,01h,3Fh,18h,1Ch,0Eh,06h
+; ; E char I:60h = 00h,09h,0Ah,13h,14h,1Dh,1Eh,0FFh
+; RET
+; END
+  
+ 

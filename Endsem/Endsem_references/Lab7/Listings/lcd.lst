@@ -1,0 +1,334 @@
+C51 COMPILER V9.60.7.0   LCD                                                               03/06/2023 16:35:59 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN .\Objects\lcd.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lcd.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\lcd.l
+                    -st) TABS(2) OBJECT(.\Objects\lcd.obj)
+
+line level    source
+
+   1          #include <at89c5131.h>
+   2          #include "lcd.h"
+   3          #include <stdio.h>
+   4          #include <math.h>
+   5          #define MAX_LCD_CHARS 16 // Maximum characters per line on the LCD
+   6          unsigned char display_msg1[MAX_LCD_CHARS + 1];
+   7          unsigned char display_msg2[MAX_LCD_CHARS + 1];
+   8          
+   9          unsigned char count = 0;
+  10          const unsigned char password[] = "15A8*D6#";
+  11          // const unsigned char password[] = "123456789";
+  12           
+  13          unsigned char entered_Password[8];
+  14          
+  15          unsigned char row, col, rn, cn;
+  16          unsigned char display[2];
+  17          unsigned char ValidatingParameter = 1;
+  18          // display[1] = '\0'; this line gave error
+  19          /* Any initialisation that involves executable code must be done inside a function & not in global scope *
+             -/
+  20          const unsigned char lookup[4][4] = {
+  21              {'1', '2', '3', 'A'},
+  22              {'4', '5', '6', 'B'},
+  23              {'7', '8', '9', 'C'},
+  24              {'*', '0', '#', 'D'}};
+  25          
+  26          // first square box in flow-chart
+  27          unsigned int my_strlen(const unsigned char *str);
+  28          void center_pad(const unsigned char *str_to_pad, unsigned char lcd_str[MAX_LCD_CHARS + 1], unsigned char p
+             -ad_char);
+  29          
+  30          // void check_key_press_after_all_keys_release(void);
+  31          int  check_key_press_after_all_keys_release(void);
+  32          void confirm_key_press(void);
+  33          unsigned char returnPressedKey(void);
+  34          
+  35          void takeInput();
+  36          void ValidatePasscode(void);
+  37          
+  38           unsigned char alphabet =97;
+  39           unsigned char position = 0xc0;
+  40          void main()
+  41          {
+  42   1          lcd_init();
+  43   1          lcd_cmd(0x80); // Move cursor to first line
+  44   1          msdelay(4);
+  45   1      
+  46   1          while (1)
+  47   1          {
+  48   2              takeInput();
+  49   2              ValidatePasscode();
+  50   2              msdelay(10000);
+  51   2              lcd_cmd(0x01); // LCD clear
+  52   2          }
+C51 COMPILER V9.60.7.0   LCD                                                               03/06/2023 16:35:59 PAGE 2   
+
+  53   1      }
+  54          /*
+  55          column: 3   2   1   0        ROWS
+  56          
+  57            P3.4  1   2   3   A        0
+  58            P3.5  4   5   6   B        1
+  59            P3.6  7   8   9   C        2
+  60            P3.7  1   2   3   A        3
+  61          
+  62              P3.3  P3.2  P3.1  P3.0
+  63          */
+  64          void takeInput()
+  65          { // create a loop that iterates 8x and reads a character from keypad in each iteration
+  66   1          // as a new character is read it should be displayed on 2nd row of LCD also store characters in string
+  67   1          // after one iteration count will not be initialise to 0 it will be 8
+  68   1          count = 0;
+  69   1           
+  70   1          
+  71   1          lcd_cmd(0x01); // clears lcd
+  72   1          lcd_cmd(0x80); //force cursor to first line
+  73   1          center_pad("Enter Password",display_msg1,32);//32 is ascii of space which is to be used while center a
+             -ligning
+  74   1          lcd_write_string(display_msg1);
+  75   1          // msdelay(4);
+  76   1      
+  77   1          lcd_cmd(0xC0); //force cursor to second line
+  78   1          // display = 'a';
+  79   1      //    alphabet='a';
+  80   1          while (count < 8)
+  81   1          {   
+  82   2              lcd_cmd(0xC8);
+  83   2              // lcd_write_char(alphabet);
+  84   2              // alphabet++;
+  85   2              while( check_key_press_after_all_keys_release() )
+  86   2              {
+  87   3                  // lcd_write_char(alphabet);
+  88   3                 //wents into this loop if check_key_press_after_all_keys_release() =0
+  89   3              //    alphabet++;
+  90   3                 lcd_cmd(0xc9);
+  91   3                 msdelay(5);
+  92   3                 if( check_key_press_after_all_keys_release() ==   0   )
+  93   3                 {
+  94   4                  break;
+  95   4                 }
+  96   3              }
+  97   2              confirm_key_press();
+  98   2      
+  99   2              entered_Password[count] = returnPressedKey();
+ 100   2              
+ 101   2              
+ 102   2               
+ 103   2              // msdelay(10);
+ 104   2              lcd_cmd(position);
+ 105   2              position++;
+ 106   2              lcd_write_char(entered_Password[count]);
+ 107   2              // msdelay(50);//changed
+ 108   2              count++;//earlier count++ written earlier so not working
+ 109   2              // doubt how does cursor move ahead
+ 110   2              // lcd_cmd(0x14);
+ 111   2          }
+ 112   1          // msdelay(200);
+ 113   1          lcd_cmd(0x01); // LCD clear
+C51 COMPILER V9.60.7.0   LCD                                                               03/06/2023 16:35:59 PAGE 3   
+
+ 114   1          msdelay(10);
+ 115   1          lcd_cmd(0xc0); // move cursor to 2nd line
+ 116   1          center_pad("Comparing", display_msg2, 32);
+ 117   1          // msdelay(4);
+ 118   1          lcd_write_string(display_msg2);
+ 119   1          // msdelay(2000);
+ 120   1          return;
+ 121   1      }
+ 122          
+ 123          void ValidatePasscode()
+ 124          {
+ 125   1          // resetting,what if it becomes 0 after some trial and not through the for loop
+ 126   1          ValidatingParameter = 1;
+ 127   1          for (count = 0; count < 8; count++)
+ 128   1          {
+ 129   2              if (password[count] != entered_Password[count])
+ 130   2              {
+ 131   3                  ValidatingParameter = 0;
+ 132   3                  break;
+ 133   3              }
+ 134   2          }
+ 135   1          if (ValidatingParameter) // if its 1 than password matches
+ 136   1          {
+ 137   2              lcd_cmd(0x01); // clears the lcd
+ 138   2              lcd_cmd(0x80); // move cursor to first line
+ 139   2              msdelay(5);
+ 140   2              center_pad("Correct Password", display_msg1, 32);
+ 141   2              lcd_write_string(display_msg1);
+ 142   2      
+ 143   2              msdelay(5);
+ 144   2              center_pad("Access Granted", display_msg2, 32);
+ 145   2              lcd_write_string(display_msg2);
+ 146   2              return;
+ 147   2          }
+ 148   1          // else case
+ 149   1          lcd_cmd(0x01); // clears the lcd
+ 150   1          lcd_cmd(0x80); // move cursor to first line
+ 151   1          msdelay(5);
+ 152   1          center_pad("Wrong Password", display_msg1, ' ');
+ 153   1          lcd_write_string(display_msg1);
+ 154   1      
+ 155   1          msdelay(5);
+ 156   1          center_pad("Access Denied", display_msg2, ' ');
+ 157   1          lcd_write_string(display_msg2);
+ 158   1          // return redundant line of code
+ 159   1      }
+ 160          
+ 161          int  check_key_press_after_all_keys_release(void)
+ 162          {
+ 163   1          /*to make sure that preceding key has been released,0s are output to all rows at once,and the columns 
+             -are read and checked
+ 164   1           repeatedly until all columns are high , when all columns high program waits for short amount of time 
+             -before it goes to
+ 165   1           next stage of waiting for a key to be pressed */
+ 166   1      
+ 167   1          P3 = 0x0f;
+ 168   1          msdelay(20);      // time delay
+ 169   1          col = P3 & 0x0f; // reading all columns
+ 170   1          if (col == 0x0f) // means all keys have been released
+ 171   1          {
+ 172   2              msdelay(20); // time delay
+ 173   2              return 1;
+C51 COMPILER V9.60.7.0   LCD                                                               03/06/2023 16:35:59 PAGE 4   
+
+ 174   2          }
+ 175   1          // if key has not been released go to start of this function and check till all keys released
+ 176   1          // check_key_press_after_all_keys_release();
+ 177   1          return 0;
+ 178   1      }
+ 179          
+ 180          void confirm_key_press(void)
+ 181          {
+ 182   1          // P3 =P3 & 0x0f;
+ 183   1          col = P3 & 0x0f;
+ 184   1          msdelay(3);
+ 185   1          if (col == 0x0f)
+ 186   1          { // no key pressed; remember rows are still grounded
+ 187   2              msdelay(5);
+ 188   2              confirm_key_press();
+ 189   2          }
+ 190   1          msdelay(200); // time delay for debounce
+ 191   1          col = P3 & 0x0f;
+ 192   1          msdelay(1);
+ 193   1          if (col == 0x0f)
+ 194   1          { // after debouncing time delay not detected
+ 195   2            msdelay(100);
+ 196   2              // check_key_press_after_all_keys_release();//this is returning integer where it will be checked
+ 197   2              while( check_key_press_after_all_keys_release() )
+ 198   2              {
+ 199   3                  // lcd_write_char(alphabet);
+ 200   3                 //wents into this loop if check_key_press_after_all_keys_release() =0
+ 201   3              //    alphabet++;
+ 202   3                 lcd_cmd(0xc9);
+ 203   3                 msdelay(500);
+ 204   3                 if( check_key_press_after_all_keys_release() ==   0   )
+ 205   3                 {
+ 206   4                  break;
+ 207   4                 }
+ 208   3              }
+ 209   2              confirm_key_press();
+ 210   2          }
+ 211   1          // else key press confirmed
+ 212   1          return;
+ 213   1      }
+ 214          
+ 215          unsigned char returnPressedKey(void)
+ 216          {
+ 217   1          // store column number
+ 218   1          cn = ~(col | 0xf0); // effectively first 4 bits 0 and last 4 bits flipped
+ 219   1          // for finding row
+ 220   1          if(cn==1){cn=0;}
+ 221   1          else if(cn==2){cn=1;}
+ 222   1          else if(cn==4){cn=2;}
+ 223   1           else// if(cn==8)
+ 224   1          {cn=3;}
+ 225   1          for (rn = 0; rn < 4; rn++)
+ 226   1          {
+ 227   2              P3 = 0xff ^ (1 << (4 + rn));
+ 228   2              msdelay(5); // small buffer after zeroing a row waiting for some time so that output gets updated
+ 229   2              col = P3 & 0x0f;
+ 230   2              if (col != 0x0f)
+ 231   2              {
+ 232   3                  // it means we have found the row where key is being pressed
+ 233   3                  // rn = rn;
+ 234   3                  break;
+ 235   3              }
+C51 COMPILER V9.60.7.0   LCD                                                               03/06/2023 16:35:59 PAGE 5   
+
+ 236   2              msdelay(10);
+ 237   2          }
+ 238   1          // if for some reason not able to find go back to first step
+ 239   1          if (rn == 4)
+ 240   1          { // not found in lookup
+ 241   2              check_key_press_after_all_keys_release();
+ 242   2          }
+ 243   1      
+ 244   1      
+ 245   1          // P1=(4*rn+3-cn)<<4;
+ 246   1          // msdelay(5);
+ 247   1          return lookup[rn][3 - cn];
+ 248   1      }
+ 249          
+ 250          unsigned int my_strlen(const unsigned char *str)
+ 251          {
+ 252   1          unsigned int len = 0;
+ 253   1          while (str[len] != '\0')
+ 254   1          {
+ 255   2              len++;
+ 256   2          }
+ 257   1          return len;
+ 258   1      }
+ 259          
+ 260          void center_pad(const unsigned char *str_to_pad, unsigned char lcd_str[MAX_LCD_CHARS + 1], unsigned char p
+             -ad_char)
+ 261          {
+ 262   1          unsigned int len = my_strlen(str_to_pad);
+ 263   1          unsigned int spaces = MAX_LCD_CHARS - len;
+ 264   1          unsigned int left_spaces = spaces / 2;
+ 265   1          unsigned int right_spaces = spaces - left_spaces;
+ 266   1          unsigned int i;
+ 267   1      
+ 268   1          // Pad the left side with spaces
+ 269   1          for (i = 0; i < left_spaces; i++)
+ 270   1          {
+ 271   2              lcd_str[i] = pad_char;
+ 272   2          }
+ 273   1      
+ 274   1          // Copy the input string into the center of the LCD string
+ 275   1          for (i = 0; i < len; i++)
+ 276   1          {
+ 277   2              lcd_str[left_spaces + i] = str_to_pad[i];
+ 278   2          }
+ 279   1      
+ 280   1          // Pad the right side with spaces
+ 281   1          for (i = left_spaces + len; i < MAX_LCD_CHARS; i++)
+ 282   1          {
+ 283   2              lcd_str[i] = pad_char;
+ 284   2          }
+ 285   1      
+ 286   1          // Add a null terminator to the end of the string
+ 287   1          lcd_str[MAX_LCD_CHARS] = '\0';
+ 288   1      }
+ 289          
+ 290          /* code unsigned char pad1[] = "Correct Password"; // Display msg on 1st line of lcd
+ 291          code unsigned char pad2[] = "Access Granted";   // Display msg on 2st line of lcd
+ 292          code unsigned char pad3[] = "Wrong Password";    // Display msg on 1st line of lcd
+ 293          code unsigned char pad4[] = "Access Denied";    // Display msg on 2st line of lcd
+ 294            */
+
+
+C51 COMPILER V9.60.7.0   LCD                                                               03/06/2023 16:35:59 PAGE 6   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1020    ----
+   CONSTANT SIZE    =     86    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     77      21
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

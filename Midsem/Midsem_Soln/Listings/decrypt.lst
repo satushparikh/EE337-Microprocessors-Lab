@@ -1,0 +1,245 @@
+A51 MACRO ASSEMBLER  DECRYPT                                                              02/13/2023 15:09:00 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\decrypt.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE decrypt.asm SET(SMALL) DEBUG PRINT(.\Listings\decrypt.lst) OBJECT(.\Obj
+                      ects\decrypt.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+0000                   1     org 00h
+0000 020040            2     ljmp MAIN
+0040                   3     org 40h
+0040                   4     MAIN:
+                       5     
+                       6     ;-------------------------TAKING INPUT FROM P1.3 to P1.0-----------------------------------
+                             ---------------------------  
+0040 75900F            7                     mov p1,#0fh
+0043 D294              8                     setb p1.4
+0045 311F              9                     CALL DELAY_5s
+0047 C294             10                     clr p1.4
+0049 E4               11                     clr a
+004A E590             12                     mov a,p1
+004C F571             13                     mov 71h,a  
+                      14     
+004E 7570F7           15                     mov 70h, #247  
+                      16             
+0051 757205           17                     mov 72h, #05h  
+                      18                     
+                      19     ;------------------------------COMPUTATION BEGINS------------------------------------------
+                             ---------------------------- 
+0054 E571             20                     mov A, 71h
+0056 8572F0           21                     mov B, 72h
+                      22                     
+0059 118C             23                     CALL A_exp_B
+                      24                     
+005B 857350           25                     mov 50h,73h
+005E 857451           26                     mov 51h,74h 
+                      27     
+0061 11D8             28                     CALL BA_mod_r0
+                      29                     
+0063 F573             30                     mov 73h, a  
+                      31                     
+                      32     ;--------------DISPLAYING THE RESULT ON LEDs NIBBLE by NIBBLE MSB NIBBLE FIRST(IN ENDLESS L
+                             OOP) -----------
+                      33     
+                      34                     
+0065 75900F           35     Here:   mov p1,#0fh
+0068 E573             36                     mov a,73h
+006A 54F0             37                     anl a,#0f0h
+006C F590             38                     mov p1,a
+006E 311F             39                     CALL DELAY_5s
+                      40                     
+0070 759000           41                     mov p1,#00h
+0073 3114             42                     CALL DELAY_1s
+0075 3114             43                     CALL DELAY_1s
+                      44                     
+0077 E573             45                     mov a,73h
+0079 540F             46                     anl a,#0fh
+007B C4               47                     swap a
+007C 75900F           48                     mov p1,#0fh
+007F F590             49                     mov p1,a
+0081 311F             50                     CALL DELAY_5s
+                      51                     
+0083 759000           52                     mov p1,#00h
+0086 3114             53                     CALL DELAY_1s
+0088 3114             54                     CALL DELAY_1s
+A51 MACRO ASSEMBLER  DECRYPT                                                              02/13/2023 15:09:00 PAGE     2
+
+                      55                     
+                      56                     
+008A 80D9             57                      JMP Here
+                      58                     
+                      59     ;------------------------------------------------------------------------------------------
+                             --------------       
+                      60     
+008C                  61     A_exp_B:
+008C 757300           62                     mov 73h,#00h
+008F F574             63                     mov 74h,A
+0091 F575             64                     mov 75h,A
+0093 15F0             65                     dec B
+0095 AFF0             66                     mov r7,B
+0097 119C             67                     up:     CALL MULT_16x8
+0099 DFFC             68                     DJNZ r7,up
+009B 22               69     RET
+                      70     ;------------------------------------------------------------------------------------------
+                             --------------       
+                      71     
+                      72     
+                      73     
+                      74     
+009C                  75     MULT_16x8:
+009C E574             76                     mov A,74h
+009E 8575F0           77                     mov B,75h
+00A1 A4               78                     mul AB
+00A2 85F060           79                     mov 60h,B
+00A5 F561             80                     mov 61h,A
+                      81                     
+00A7 E573             82                     mov A,73h
+00A9 8575F0           83                     mov B,75h
+00AC A4               84                     mul AB
+00AD F562             85                     mov 62h,A    
+00AF 756300           86                     mov 63h,#00h
+00B2 11B5             87                     CALL ADD_16
+                      88     
+00B4 22               89     RET
+                      90     ;------------------------------------------------------------------------------------------
+                             --------------
+                      91     
+                      92     
+                      93     
+00B5 AB60             94     ADD_16: mov r3,60h 
+00B7 AC61             95                     mov r4,61h
+00B9 AD62             96                     mov r5,62h 
+00BB AE63             97                     mov r6,63h
+00BD EC               98                     mov a,r4
+00BE 2E               99                     add a,r6
+00BF F574            100                     mov 74h,a   
+00C1 EB              101                     mov a,r3
+00C2 3D              102                     addc a,r5
+00C3 F573            103                     mov 73h,a  
+                     104                     
+00C5 22              105     RET     
+                     106     
+                     107     
+                     108     ;------------------------------------------------------------------------------------------
+                             --------------
+                     109     
+                     110     
+                     111     
+00C6                 112     SUB_16: 
+00C6 AB60            113                     mov r3,60h 
+00C8 AC61            114                     mov r4,61h
+00CA AD62            115                     mov r5,62h 
+00CC AE63            116                     mov r6,63h
+A51 MACRO ASSEMBLER  DECRYPT                                                              02/13/2023 15:09:00 PAGE     3
+
+00CE EC              117                     mov a,r4
+00CF C3              118                     clr c
+00D0 9E              119                     subb a,r6
+00D1 F566            120                     mov 66h,a   
+00D3 EB              121                     mov a,r3
+00D4 9D              122                     subb a,r5
+00D5 F565            123                     mov 65h,a  
+00D7 22              124     RET     
+                     125     
+                     126     ;------------------------------------------------------------------------------------------
+                             --------------       
+00D8                 127     BA_mod_r0:
+                     128     
+00D8 8573F0          129                     mov b, 73h
+00DB E574            130                     mov a, 74h
+00DD A870            131                     mov r0, 70h
+                     132     
+                     133     ;Mod n operation
+                     134     
+00DF 85F060          135                     mov 60h,b
+00E2 F561            136                     mov 61h,a
+00E4 756200          137                     mov 62h,#00h
+00E7 8863            138                     mov 63h,r0
+                     139                     
+00E9 11C6            140     up1:    CALL SUB_16
+00EB 856560          141                     mov 60h,65h
+00EE 856661          142                     mov 61h,66h
+00F1 E565            143                     mov a,65h
+00F3 B400F3          144                     cjne a,#00h,up1
+00F6 E566            145                     mov a,66h
+00F8 98              146                     subb a,r0
+00F9 50EE            147                     jnc up1
+00FB E566            148                     mov a,66h
+00FD F573            149             mov 73h, a               
+00FF 22              150     RET
+                     151     ;------------------------------------------------------------------------------------------
+                             -----------------
+0100                 152     DELAY_250us:
+0100 C000            153     push 00h
+0102 78FA            154     mov r0,#0fah
+0104                 155     back1:
+0104 D8FE            156             djnz r0,back1
+0106 D000            157     pop 00h
+0108 22              158     RET
+                     159     
+0109                 160     DELAY_10ms:
+0109 C000            161     push 00h
+010B 7828            162     mov r0,#40
+010D                 163     back2:
+010D 3100            164             CALL DELAY_250us
+010F D8FC            165             djnz r0,back2
+0111 D000            166     pop 00h
+0113 22              167     RET
+                     168     
+0114                 169     DELAY_1s: 
+0114 C000            170     push 00h
+0116 7864            171     mov r0,#100
+0118                 172     back3:
+0118 3109            173             CALL DELAY_10ms
+011A D8FC            174             djnz r0,back3
+011C D000            175     pop 00h
+011E 22              176     RET
+                     177     
+011F                 178     DELAY_5s: 
+011F C000            179     push 00h
+0121 7805            180     mov r0,#5
+A51 MACRO ASSEMBLER  DECRYPT                                                              02/13/2023 15:09:00 PAGE     4
+
+0123                 181     back4:
+0123 3114            182             CALL DELAY_1s
+0125 D8FC            183             djnz r0,back4
+0127 D000            184     pop 00h
+0129 22              185     RET
+                     186     
+                     187     END
+A51 MACRO ASSEMBLER  DECRYPT                                                              02/13/2023 15:09:00 PAGE     5
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ADD_16 . . . . . .  C ADDR   00B5H   A   
+A_EXP_B. . . . . .  C ADDR   008CH   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+BACK1. . . . . . .  C ADDR   0104H   A   
+BACK2. . . . . . .  C ADDR   010DH   A   
+BACK3. . . . . . .  C ADDR   0118H   A   
+BACK4. . . . . . .  C ADDR   0123H   A   
+BA_MOD_R0. . . . .  C ADDR   00D8H   A   
+DELAY_10MS . . . .  C ADDR   0109H   A   
+DELAY_1S . . . . .  C ADDR   0114H   A   
+DELAY_250US. . . .  C ADDR   0100H   A   
+DELAY_5S . . . . .  C ADDR   011FH   A   
+HERE . . . . . . .  C ADDR   0065H   A   
+MAIN . . . . . . .  C ADDR   0040H   A   
+MULT_16X8. . . . .  C ADDR   009CH   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+SUB_16 . . . . . .  C ADDR   00C6H   A   
+UP . . . . . . . .  C ADDR   0097H   A   
+UP1. . . . . . . .  C ADDR   00E9H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

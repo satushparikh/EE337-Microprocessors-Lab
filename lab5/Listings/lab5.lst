@@ -1,0 +1,218 @@
+A51 MACRO ASSEMBLER  LAB5                                                                 02/06/2023 16:10:58 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\lab5.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE lab5.asm SET(SMALL) DEBUG PRINT(.\Listings\lab5.lst) OBJECT(.\Objects\l
+                      ab5.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;// -- DO NOT CHANGE ANYTHING UNTIL THE **** LINE--;//
+0000                   2     ORG 0H
+0000 020100            3     LJMP MAIN
+0100                   4     ORG 100H
+                       5     
+                       6     ;SA - 1960US DELAY
+                       7     ;RE - 1724US DELAY
+                       8     ;GA - 1538US DELAY
+                       9     ;MA - 1449US DELAY
+0100                  10     MAIN:
+                      11     
+0100 740F             12           MOV A,#0FH                 ;
+0102 F590             13           MOV P1,A                   ;MAKING P1 AN INPUT PORT
+                      14     ;I WILL PUT ONE LABEL HERE
+0104                  15     INPUT :  
+                      16     
+                      17       ;   MOV P0,#0                   ;MAKE OUTPUT 0
+                      18        ;  MOV P1,#0                   ;CLEAR PREVIOUS INPUT FLUSH
+                      19     
+                      20           ; MOV A,P1                   ; READING INTO A
+                      21           ; ANL A,#0FH                 ;RETAINING ONLY SWITCH INPUT EXCLUDING JUNK INPUT;
+                      22           
+                      23           ; MOV R2,A                   ;STORING DATA INTO R2
+                      24     
+                      25           ; MOV A,#0FH                 ;
+                      26           ; MOV P1,A                   ;MAKING P1 AN INPUT PORT
+                      27           ; REALISING THAT P1 CAN BE TREATED LIKE REGISTER
+0104 75900F           28           MOV P1, #0FH
+                      29             
+0107 E590             30           MOV A, P1
+0109 540F             31             ANL A, #0FH
+                      32           
+                      33     
+010B B40132           34           CJNE A,#1,RE;
+                      35     
+                      36     
+010E                  37     SA:   ;CJNE A,#0001H,RE          ;
+                      38           ;SINCE THIS IS SA GENERATING SQUARE WAVE OF FREQUENCY 25Hz
+010E B287             39           CPL P0.7;MADE 1 1960=7*250+4*50
+0110 318F             40           CALL DELAY_250US
+0112 318F             41             CALL DELAY_250US
+0114 318F             42           CALL DELAY_250US
+0116 318F             43             CALL DELAY_250US
+                      44             
+0118 318F             45           CALL DELAY_250US
+011A 318F             46             CALL DELAY_250US
+011C 318F             47             CALL DELAY_250US
+                      48     
+011E 319A             49             CALL DELAY_50US
+0120 319A             50             CALL DELAY_50US
+0122 319A             51             CALL DELAY_50US
+0124 319A             52             CALL DELAY_50US
+                      53           
+0126 B287             54           CPL P0.7; MADE 0
+                      55           
+0128 318F             56            CALL DELAY_250US
+012A 318F             57             CALL DELAY_250US
+A51 MACRO ASSEMBLER  LAB5                                                                 02/06/2023 16:10:58 PAGE     2
+
+012C 318F             58           CALL DELAY_250US
+012E 318F             59             CALL DELAY_250US
+                      60             
+0130 318F             61           CALL DELAY_250US
+0132 318F             62             CALL DELAY_250US
+0134 318F             63             CALL DELAY_250US
+                      64     
+0136 319A             65             CALL DELAY_50US
+0138 319A             66             CALL DELAY_50US
+013A 319A             67             CALL DELAY_50US
+013C 319A             68             CALL DELAY_50US
+                      69     
+013E 2104             70           AJMP INPUT;
+                      71     
+                      72     
+0140 B40316           73     RE:   CJNE A,#03,GA       ;
+                      74           ;SINCE THIS IS SA GENERATING SQUARE WAVE OF FREQUENCY 25Hz
+                      75           ;69 
+0143 B287             76           CPL P0.7
+0145 7D22             77           MOV R5,#034
+0147                  78     DELAY_RE:
+0147 319A             79           CALL DELAY_50US 
+0149 DDFC             80           DJNZ R5,DELAY_RE   
+014B 31A3             81           CALL DELAY_25US 
+                      82     
+014D B287             83           CPL P0.7
+014F 7D22             84           MOV R5,#034
+0151                  85     DELAY_RE0:
+0151 319A             86           CALL DELAY_50US 
+0153 DDFC             87           DJNZ R5,DELAY_RE0
+0155 31A3             88           CALL DELAY_25US 
+                      89     
+0157 2104             90           AJMP INPUT;    
+                      91     
+                      92      
+                      93     
+                      94     
+0159 B40712           95     GA:   CJNE A,#07H,MA       ;
+                      96           ;SINCE THIS IS SA GENERATING SQUARE WAVE OF FREQUENCY 25Hz
+015C B287             97            CPL P0.7
+015E 7D1F             98           MOV R5,#031
+0160                  99     DELAY_GA:
+0160 319A            100           CALL DELAY_50US 
+0162 DDFC            101           DJNZ R5,DELAY_GA 
+                     102            
+0164 B287            103           CPL P0.7
+0166 7D1F            104           MOV R5,#031
+0168                 105     DELAY_GA0:
+0168 319A            106           CALL DELAY_50US 
+016A DDFC            107           DJNZ R5,DELAY_GA0
+                     108            
+016C 2104            109           AJMP INPUT;  
+                     110     
+016E B40F93          111     MA:   CJNE A,#15,INPUT       ;
+                     112           ;SINCE THIS IS SA GENERATING SQUARE WAVE OF FREQUENCY 25Hz
+0171 B287            113           CPL P0.7
+0173 7D1D            114           MOV R5,#029
+0175                 115     DELAY_MA:
+0175 319A            116           CALL DELAY_50US 
+0177 DDFC            117           DJNZ R5,DELAY_MA  
+                     118     
+0179 B287            119           CPL P0.7
+017B 7D1D            120           MOV R5,#029
+017D                 121     DELAY_MA0:
+017D 319A            122           CALL DELAY_50US 
+017F DDFC            123           DJNZ R5,DELAY_MA0
+A51 MACRO ASSEMBLER  LAB5                                                                 02/06/2023 16:10:58 PAGE     3
+
+                     124     
+0181 2104            125           AJMP INPUT;    
+                     126     
+                     127      
+                     128     
+                     129     
+0183 22              130     RET
+                     131     ;time delays 
+                     132     
+                     133             
+                     134             
+0184                 135     delay_1ms:
+0184 C000            136             push 00h
+0186 7804            137             mov r0, #4
+0188 318F            138             hE2: acall delay_250us
+018A D8FC            139             djnz r0, hE2
+018C D000            140             pop 00h
+018E 22              141     ret
+                     142     
+018F                 143     delay_250us:
+018F C000            144             push 00h
+0191 7805            145             mov r0, #5
+0193 319A            146             hE1: acall delay_50us
+0195 D8FC            147             djnz r0, hE1
+0197 D000            148             pop 00h
+0199 22              149     ret
+                     150     
+019A                 151     delay_50us:
+019A C000            152             push 00h
+019C 782B            153             mov r0, #43
+019E D8FE            154             hE3: djnz r0, hE3
+01A0 D000            155             pop 00h
+01A2 22              156     ret
+                     157     
+01A3                 158     delay_25us:
+01A3 C000            159             push 00h
+01A5 7816            160             mov r0, #22
+01A7 D8F5            161             hE0: djnz r0, hE3
+01A9 D000            162             pop 00h
+01AB 22              163     ret
+                     164     
+                     165     END
+                             
+                             
+                              
+A51 MACRO ASSEMBLER  LAB5                                                                 02/06/2023 16:10:58 PAGE     4
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+DELAY_1MS. . . . .  C ADDR   0184H   A   
+DELAY_250US. . . .  C ADDR   018FH   A   
+DELAY_25US . . . .  C ADDR   01A3H   A   
+DELAY_50US . . . .  C ADDR   019AH   A   
+DELAY_GA . . . . .  C ADDR   0160H   A   
+DELAY_GA0. . . . .  C ADDR   0168H   A   
+DELAY_MA . . . . .  C ADDR   0175H   A   
+DELAY_MA0. . . . .  C ADDR   017DH   A   
+DELAY_RE . . . . .  C ADDR   0147H   A   
+DELAY_RE0. . . . .  C ADDR   0151H   A   
+GA . . . . . . . .  C ADDR   0159H   A   
+HE0. . . . . . . .  C ADDR   01A7H   A   
+HE1. . . . . . . .  C ADDR   0193H   A   
+HE2. . . . . . . .  C ADDR   0188H   A   
+HE3. . . . . . . .  C ADDR   019EH   A   
+INPUT. . . . . . .  C ADDR   0104H   A   
+MA . . . . . . . .  C ADDR   016EH   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+RE . . . . . . . .  C ADDR   0140H   A   
+SA . . . . . . . .  C ADDR   010EH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

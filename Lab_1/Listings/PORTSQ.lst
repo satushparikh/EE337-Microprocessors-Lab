@@ -1,0 +1,104 @@
+A51 MACRO ASSEMBLER  PORTSQ                                                               01/10/2023 19:04:17 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\PORTSQ.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE PORTSQ.asm SET(SMALL) DEBUG PRINT(.\Listings\PORTSQ.lst) OBJECT(.\Objec
+                      ts\PORTSQ.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+0000                   1     ORG 0H
+0000 020064            2     LJMP MAIN
+0064                   3     ORG 100
+0064                   4     MAIN:
+0064 11C8              5     CALL FINDn  
+0066 8D30              6     MOV 30H, R5
+0068 7840              7     MOV R0, #40H
+006A 11D1              8     CALL FINDr  
+006C 7840              9     BACK: MOV R0, #40H
+006E E6               10     MOV A, @R0
+006F AD30             11     MOV R5, 30H
+0071                  12     BACKIN:
+0071 8EF0             13     MOV B, R6
+                      14     ; MULT AB; syntax for mulitplication is MUL AB and not MULT
+0073 A4               15     MUL AB
+0074 F590             16     MOV P1, A;MOV @P1, A earlier 
+                      17     ; MOV destination ,source; copy source to dest
+                      18     
+0076 11D9             19     CALL DELAY 
+                      20     ; DJNE R5, BACKIN
+                      21     ; looping in 8051 has syntax
+                      22     ; DJNZ reg,label
+                      23     ; in this instruction the register is decremented and
+                      24     ; it jumps to the target address referred to by the label
+0078 DDF7             25     DJNZ R5, BACKIN
+007A 80F0             26     JMP BACK
+                      27     
+00C8                  28     ORG 200
+00C8                  29     FINDn:
+00C8 C000             30     PUSH 0
+00CA 7850             31     MOV R0, #50H
+00CC E6               32     MOV A, @R0
+00CD FD               33     MOV R5, A  
+00CE D000             34     POP 0
+00D0 22               35     RET
+                      36     
+00D1                  37     FINDr:
+00D1 08               38     INC R0
+00D2 E6               39     MOV A, @R0
+00D3 18               40     DEC R0
+00D4 86F0             41     MOV B, @R0
+                      42     ; DIV BA correct syntax is DIV AB
+00D6 84               43     DIV AB
+00D7 FE               44     MOV R6, A
+00D8 22               45     RET
+                      46     
+00D9                  47     DELAY:
+00D9 C0E0             48     PUSH ACC
+00DB C0F0             49     PUSH B
+00DD C005             50     PUSH 5
+00DF C006             51     PUSH 6
+                      52     ; MOV R5, #FFh
+00E1 7DFF             53     MOV R5, #0FFh
+                      54     ; a ZERO is used between # and F to indicate that F is a hex number and not a letter
+                      55     ; MOV R6, #FFh
+00E3 7EFF             56     MOV R6, #0FFh
+00E5 1D               57     HERE1: DEC R5
+A51 MACRO ASSEMBLER  PORTSQ                                                               01/10/2023 19:04:17 PAGE     2
+
+00E6 DEFE             58     HERE2: DJNZ R6, HERE2
+00E8 ED               59     MOV A, R5
+00E9 70FA             60     JNZ HERE1
+00EB D006             61     POP 6
+00ED D005             62     POP 5
+00EF D0F0             63     POP B
+00F1 D0E0             64     POP ACC
+00F3 22               65     RET
+                      66     
+                      67     END
+A51 MACRO ASSEMBLER  PORTSQ                                                               01/10/2023 19:04:17 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ACC. . . . . . . .  D ADDR   00E0H   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+BACK . . . . . . .  C ADDR   006CH   A   
+BACKIN . . . . . .  C ADDR   0071H   A   
+DELAY. . . . . . .  C ADDR   00D9H   A   
+FINDN. . . . . . .  C ADDR   00C8H   A   
+FINDR. . . . . . .  C ADDR   00D1H   A   
+HERE1. . . . . . .  C ADDR   00E5H   A   
+HERE2. . . . . . .  C ADDR   00E6H   A   
+MAIN . . . . . . .  C ADDR   0064H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

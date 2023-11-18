@@ -1,0 +1,74 @@
+A51 MACRO ASSEMBLER  Q2                                                                   01/16/2023 14:20:09 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\Q2.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE Q2.asm SET(SMALL) DEBUG PRINT(.\Listings\Q2.lst) OBJECT(.\Objects\Q2.ob
+                      j) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;// -- DO NOT CHANGE ANYTHING UNTIL THE **** LINE--//
+0000                   2     ORG 0H
+0000 020100            3     LJMP MAIN
+0100                   4     ORG 100H
+0100                   5     MAIN:
+0100 3130              6     CALL DET
+0102 80FE              7     HERE: SJMP HERE
+0130                   8     ORG 130H
+                       9     ;// *****************
+0130                  10     DET:
+                      11     
+                      12     ; MOV 60H,#056H
+                      13     ; MOV 61H,#012H
+                      14     ; MOV 62H,#03AH
+                      15     ; MOV 63H,#02CH
+                      16     
+0130 756034           17     MOV 60H,#034H
+0133 7561E1           18     MOV 61H,#0E1H
+0136 756259           19     MOV 62H,#059H
+0139 7563D0           20     MOV 63H,#0D0H
+                      21     
+                      22     
+013C E561             23     MOV A,61H
+013E 8562F0           24     MOV B,62H
+0141 A4               25     MUL AB;LOWER BYTE IN A & UPPER BYTE IN B
+0142 A9F0             26     MOV R1,B
+0144 F8               27     MOV R0,A     
+                      28     
+0145 E560             29     MOV A,60H
+0147 8563F0           30     MOV B,63H
+014A A4               31     MUL AB;LOWER BYTE IN A & UPPER BYTE IN B
+014B ABF0             32     MOV R3,B
+                      33     ; MOV R0,A;REDUNDANT
+014D C3               34     CLR C 
+014E 98               35     SUBB A,R0;SUBTRACTING LOWER BITS
+014F F571             36     MOV 71H,A  
+                      37     
+0151 EB               38     MOV A,R3 
+0152 99               39     SUBB A,R1    
+0153 F570             40     MOV 70H,A    
+                      41     
+                      42     
+                      43     
+                      44     ;// ADD YOUR CODE HERE
+0155 22               45     RET
+                      46     END
+A51 MACRO ASSEMBLER  Q2                                                                   01/16/2023 14:20:09 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+B. . . . . . . . .  D ADDR   00F0H   A   
+DET. . . . . . . .  C ADDR   0130H   A   
+HERE . . . . . . .  C ADDR   0102H   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

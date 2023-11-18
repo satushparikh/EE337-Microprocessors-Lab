@@ -1,0 +1,197 @@
+A51 MACRO ASSEMBLER  Q1                                                                   01/22/2023 13:38:37 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\Q1.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE Q1.asm SET(SMALL) DEBUG PRINT(.\Listings\Q1.lst) OBJECT(.\Objects\Q1.ob
+                      j) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     
+0000                   2     ORG 0H
+0000 020100            3     LJMP MAIN
+                       4     
+                       5     ; Jump to main program
+                       6     
+0100                   7     ORG 100H
+0100                   8     MAIN:
+                       9     ; Start of main program
+0100 3130             10     CALL QUANT
+                      11     ; Call the quantization subroutine
+                      12     
+0102 80FE             13     HERE: SJMP HERE
+                      14     ; Infinite loop, program will stay here
+                      15     
+0130                  16     ORG 130H
+                      17     ; *****************
+0130                  18     QUANT:
+                      19     ; Start of quantization subroutine
+                      20     
+                      21     ; ADD YOUR CODE HERE
+0130 7D05             22     MOV R5,#05
+                      23     ; Move the value 5 to register R5
+0132 7C08             24     MOV R4,#08H   
+                      25     ; Move the value 8 to register R4
+0134 7860             26     MOV R0 , #60H
+                      27     ; Move the value 60 to register R0, this is the starting address of the input data
+                      28     
+0136                  29     LOO:  
+0136 E6               30     MOV A ,@R0
+                      31     ; Move the value at the address stored in R0 to the A register
+0137 C3               32     CLR C  
+                      33     ; Clear the carry flag
+0138 941E             34     SUBB A,#30
+                      35     ; Subtract 30 from the value in A
+013A 500C             36     JNC OUT35
+                      37     ; If the carry flag is not set, jump to OUT35
+                      38     
+013C E6               39     MOV A ,@R0 
+013D 75F00A           40     MOV B,#10
+0140 84               41     DIV AB
+                      42     ; Divide the value in A by 10, store the result in A and the remainder in B
+                      43     
+0141 75F00A           44     MOV B,#10
+0144 A4               45     MUL AB 
+                      46     ; Multiply the value in A by 10, store the result in A
+                      47     
+0145 2D               48     ADD A,R5 
+                      49     ; Add the value in R5 to the value in A
+                      50     
+0146 8002             51     SJMP UPDATE
+                      52     ; Jump to the update section
+                      53     
+0148                  54     OUT35:
+0148 7423             55     MOV A,#35
+                      56     ; If the carry flag was set, move the value 35 to A
+                      57     
+A51 MACRO ASSEMBLER  Q1                                                                   01/22/2023 13:38:37 PAGE     2
+
+014A                  58     UPDATE:
+014A F6               59     MOV @R0,A 
+                      60     ; Move the value in A to the memory location stored in R0
+014B 08               61     INC R0 
+                      62     ; Increment the value in R0
+014C DCE8             63     DJNZ R4, LOO
+                      64     ; Decrement the value in R4 and jump to LOO if it is not zero
+                      65     
+                      66     ; MOV A ,@R0 
+                      67     ; MOV B,#10
+                      68     ; DIV AB
+                      69     ; MOV B,#10
+                      70     ; MUL AB 
+                      71     ; ADD A,R5 
+                      72     ; MOV @R0,A 
+                      73     ; INC R0 
+                      74     ; DJNZ R4, LOO
+                      75     
+014E 7860             76     MOV R0,#60H 
+0150 7970             77     MOV R1,#70H 
+0152 7E08             78     MOV R6,#08H
+                      79     
+0154                  80     ANSWER:
+                      81     ; MOV @R1,@R0             invalid    
+0154 E6               82     MOV A,@R0                ;try to work with R0 and R1
+0155 F7               83     MOV @R1,A    ;THIS TYPE OF SYNTAX IS ONLY VALID FOR R0 AND R1            
+                      84     ; MOV A,@R4                ;GIVING SYNTAX ERROR
+                      85     ; MOV @R5,A    THIS TYPE OF SYNTAX IS ONLY VALID FOR R0 AND R1            
+0156 08               86     INC R0
+0157 09               87     INC R1    
+0158 DEFA             88     DJNZ R6, ANSWER
+                      89     ; Copy the quantized data from memory location 60h to 70h, 8 times
+                      90     
+                      91     ; E char I:60h = 11h,2Ah,01h,3Fh,18h,1Ch,0Eh,06h
+                      92     ; E char I:60h = 00h,09h,0Ah,13h,14h,1Dh,1Eh,0FFh
+                      93     
+015A 22               94     RET
+                      95     ; Return from subroutine
+                      96     END
+                             
+                             ; ORG 0H
+                             ; LJMP MAIN
+                             ; ORG 100H
+                             ; MAIN:
+                             ; CALL QUANT
+                             ; HERE: SJMP HERE
+                             ; ORG 130H
+                             ; ; *****************
+                             ; QUANT:
+                             ; ; ADD YOUR CODE HERE
+                             ; MOV R5,#05
+                             ; MOV R4,#08H   
+                             ; MOV R0 , #60H
+                             ; LOO :  
+                             ; MOV A ,@R0
+                             ; CLR C  
+                             ; SUBB A,#30
+                             ; JNC OUT35
+                             ; MOV A ,@R0 
+                             ; MOV B,#10
+                             ; DIV AB
+                             ; MOV B,#10
+                             ; MUL AB 
+                             ; ADD A,R5 
+                             ; SJMP UPDATE
+                             
+A51 MACRO ASSEMBLER  Q1                                                                   01/22/2023 13:38:37 PAGE     3
+
+                             
+                             ; OUT35:
+                             ; MOV A,#35
+                             
+                             ; UPDATE:
+                             ; MOV @R0,A 
+                             ; INC R0 
+                             ; DJNZ R4, LOO
+                             ; ; MOV A ,@R0 
+                             ; ; MOV B,#10
+                             ; ; DIV AB
+                             ; ; MOV B,#10
+                             ; ; MUL AB 
+                             ; ; ADD A,R5 
+                             ; ; MOV @R0,A 
+                             ; ; INC R0 
+                             ; ; DJNZ R4, LOO
+                             
+                             ; MOV R0,#60H 
+                             ; MOV R1,#70H 
+                             ; MOV R6,#08H
+                             
+                             ; ANSWER:
+                             ; ; MOV @R1,@R0             invalid    
+                             ; MOV A,@R0                ;try to work with R0 and R1
+                             ; MOV @R1,A    ;THIS TYPE OF SYNTAX IS ONLY VALID FOR R0 AND R1            
+                             ; ; MOV A,@R4                ;GIVING SYNTAX ERROR
+                             ; ; MOV @R5,A    THIS TYPE OF SYNTAX IS ONLY VALID FOR R0 AND R1            
+                             ; INC R0
+                             ; INC R1    
+                             ; DJNZ R6, ANSWER
+                             
+                             ; ; E char I:60h = 11h,2Ah,01h,3Fh,18h,1Ch,0Eh,06h
+                             ; ; E char I:60h = 00h,09h,0Ah,13h,14h,1Dh,1Eh,0FFh
+                             ; RET
+                             ; END
+                               
+                              
+A51 MACRO ASSEMBLER  Q1                                                                   01/22/2023 13:38:37 PAGE     4
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ANSWER . . . . . .  C ADDR   0154H   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+HERE . . . . . . .  C ADDR   0102H   A   
+LOO. . . . . . . .  C ADDR   0136H   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+OUT35. . . . . . .  C ADDR   0148H   A   
+QUANT. . . . . . .  C ADDR   0130H   A   
+UPDATE . . . . . .  C ADDR   014AH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

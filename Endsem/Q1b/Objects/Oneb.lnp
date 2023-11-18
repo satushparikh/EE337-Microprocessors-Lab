@@ -1,0 +1,4 @@
+".\Objects\STARTUP.obj",
+".\Objects\Q1Scarlet.obj" 
+TO ".\Objects\Oneb" 
+PRINT(".\Listings\Oneb.m51") RAMSIZE(256) 

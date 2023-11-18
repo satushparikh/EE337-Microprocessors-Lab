@@ -1,0 +1,148 @@
+A51 MACRO ASSEMBLER  LAB2_Q1                                                              02/12/2023 09:35:48 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\lab2_Q1.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE lab2_Q1.asm SET(SMALL) DEBUG PRINT(.\Listings\lab2_Q1.lst) OBJECT(.\Obj
+                      ects\lab2_Q1.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; ORG 0
+                       2     ; LJMP MAIN
+                       3     
+                       4     ; ORG 100
+                       5     ; MAIN:
+                       6     ; ; Set initial values for A and B
+                       7     ; MOV R2, #30H
+                       8     ; MOV R3, #40H
+                       9     ; ; Call function to perform the extended Euclidean algorithm
+                      10     ; CALL EXTEUCLID
+                      11     ; ; The result is stored in R2 (gcd) and R3 (coefficients)
+                      12     ; ; End the program
+                      13     ; END
+                      14     
+                      15     ; ORG 200
+                      16     ; EXTEUCLID:
+                      17     ; ; Save the values of A and B on the stack
+                      18     ; PUSH R2
+                      19     ; PUSH R3
+                      20     ; ; Initialize the loop counter and temp register
+                      21     ; MOV R4, #0
+                      22     ; MOV R5, #0
+                      23     
+                      24     ; LOOP:
+                      25     ; ; Check if B is 0 (indicating gcd has been found)
+                      26     ; CJNE R3, #0, DO_CALC
+                      27     ; ; Pop the values of A and B from the stack
+                      28     ; POP R3
+                      29     ; POP R2
+                      30     ; ; Return with the gcd in R2 and coefficients in R3
+                      31     ; RET
+                      32     
+                      33     ; DO_CALC:
+                      34     ; ; Calculate the quotient and remainder
+                      35     ; DIV AB
+                      36     ; MOV R5, A
+                      37     ; MOV R4, B
+                      38     ; ; Replace A with B and B with the remainder
+                      39     ; MOV A, R3
+                      40     ; MOV R3, R4
+                      41     ; ; Increment the loop counter
+                      42     ; INC R4
+                      43     ; ; Repeat the loop
+                      44     ; SJMP LOOP
+                      45     
+                      46     ; END
+                      47     
+                      48     
+                      49     
+                      50     
+                      51     
+                      52     
+                      53     ;// -- DO NOT CHANGE ANYTHING UNTIL THE **** LINE--//
+0000                  54     ORG 0H
+0000 020100           55     LJMP MAIN
+0100                  56     ORG 100H
+0100                  57     MAIN:
+A51 MACRO ASSEMBLER  LAB2_Q1                                                              02/12/2023 09:35:48 PAGE     2
+
+                      58     ; MOV 70H, #034H
+                      59      ;MOV 71H, #05AH
+0100 74FF             60      MOV A,#0FFH 
+0102 04               61     INC A 
+0103 04               62     INC A
+                      63     ;  MOV 70H, #001H
+                      64     ;  MOV 71H, #063H
+                      65      
+0104 75704D           66     MOV 70H, #04DH
+0107 757109           67     MOV 71H, #009H
+010A 7961             68     MOV R1, #61H
+                      69     
+                      70     ; M1 thought of writng MOV B,R1 here as i thought writing it 2x in MODADD and MODSUB will b
+                             e redundatn
+                      71     ; but it turns out that B is getting modified in MODADD(remainder) and hence it became nece
+                             ssary to write
+                      72     ; again in MODSUB
+                      73     ; MOV B,R1
+010C 3130             74     CALL MODADD
+010E 313B             75     CALL MODSUB
+0110 80FE             76     HERE: SJMP HERE
+0130                  77     ORG 130H
+                      78     ;// *****************
+0130                  79     MODADD:
+                      80     ;// ADD YOUR CODE HERE
+0130 E570             81     MOV A ,70H
+0132 2571             82     ADD A,71H
+0134 89F0             83     MOV B,R1
+0136 84               84     DIV AB
+0137 85F072           85     MOV 72H,B
+                      86     
+013A 22               87     RET
+013B                  88     MODSUB:
+                      89     ;// ADD YOUR CODE HERE
+013B C3               90     CLR C
+013C E570             91     MOV A ,70H
+013E 9571             92     SUBB A ,71H
+0140 500A             93     JNC NEXT;if carry bit is not set(no borrow) go directly to next
+                      94     ;taking 2's complement 
+0142 F4               95     CPL A;if carry bit is set, (x)-(x+e)=-e in A; answer is (divisor - e mod divisor)
+0143 04               96     INC A; A now contains c, our target is to find -e mod divisor  in next step we are finding 
+                             e mod divisor
+0144 89F0             97     MOV B,R1
+0146 84               98     DIV AB;B now contains contains e mod divisor
+0147 C3               99     CLR C 
+0148 7461            100     MOV A,#61H 
+014A 95F0            101     SUBB A,B 
+                     102      
+                     103     
+014C                 104     NEXT : 
+014C 89F0            105     MOV B,R1
+014E 84              106     DIV AB
+014F 85F073          107     MOV 73H,B
+0152 22              108     RET
+                     109     END
+                             ; x and y must stored at locations 70H and 71H
+                             ; sum = (x + y) mod 61H
+                             ; diff = (x - y) mod 61H
+                             ; • The sum should be stored in 72H and the difference should be stored in 73H.
+A51 MACRO ASSEMBLER  LAB2_Q1                                                              02/12/2023 09:35:48 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+B. . . . . . . . .  D ADDR   00F0H   A   
+HERE . . . . . . .  C ADDR   0110H   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+MODADD . . . . . .  C ADDR   0130H   A   
+MODSUB . . . . . .  C ADDR   013BH   A   
+NEXT . . . . . . .  C ADDR   014CH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

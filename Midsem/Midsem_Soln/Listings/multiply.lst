@@ -1,0 +1,84 @@
+A51 MACRO ASSEMBLER  MULTIPLY                                                             02/13/2023 14:35:35 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\multiply.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE multiply.a51 SET(SMALL) DEBUG PRINT(.\Listings\multiply.lst) OBJECT(.\O
+                      bjects\multiply.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+0000                   1     org 00h
+0000 020100            2     ljmp MAIN
+0100                   3     org 100h
+0100                   4     MAIN:
+                       5                     
+0100 757302            6                     mov 73h, #02H
+0103 757471            7                     mov 74h, #71H
+0106 757505            8                     mov 75h, #05H
+                       9                     
+0109 310D             10             CALL MULT_16x8
+                      11                     
+                      12                     
+010B 80FE             13                     Here: SJMP Here
+                      14     
+                      15     
+                      16     ;------------------------------------------------------------------------------------------
+                             --------------       
+                      17     
+                      18     
+                      19     
+                      20     
+010D                  21     MULT_16x8:
+010D E574             22                     mov A,74h
+010F 8575F0           23                     mov B,75h
+0112 A4               24                     mul AB
+0113 85F060           25                     mov 60h,B
+0116 F561             26                     mov 61h,A
+                      27                     
+0118 E573             28                     mov A,73h
+011A 8575F0           29                     mov B,75h
+011D A4               30                     mul AB
+011E F562             31                     mov 62h,A    
+0120 756300           32                     mov 63h,#00h
+0123 3126             33                     CALL ADD_16
+                      34     
+0125 22               35     RET
+                      36     ;------------------------------------------------------------------------------------------
+                             --------------
+                      37     
+                      38     
+                      39     
+0126 AB60             40     ADD_16: mov r3,60h 
+0128 AC61             41                     mov r4,61h
+012A AD62             42                     mov r5,62h 
+012C AE63             43                     mov r6,63h
+012E EC               44                     mov a,r4
+012F 2E               45                     add a,r6
+0130 F574             46                     mov 74h,a   
+0132 EB               47                     mov a,r3
+0133 3D               48                     addc a,r5
+0134 F573             49                     mov 73h,a  
+                      50                     
+0136 22               51     RET     
+                      52     
+                      53     END
+A51 MACRO ASSEMBLER  MULTIPLY                                                             02/13/2023 14:35:35 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ADD_16 . . . . . .  C ADDR   0126H   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+HERE . . . . . . .  C ADDR   010BH   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+MULT_16X8. . . . .  C ADDR   010DH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

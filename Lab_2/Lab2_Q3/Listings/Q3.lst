@@ -1,0 +1,88 @@
+A51 MACRO ASSEMBLER  Q3                                                                   01/16/2023 14:28:12 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\Q3.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE Q3.asm SET(SMALL) DEBUG PRINT(.\Listings\Q3.lst) OBJECT(.\Objects\Q3.ob
+                      j) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; -- DO NOT CHANGE ANYTHING UNTIL THE **** LINE--;
+                       2     ; E char I:60h = 14h,69h,26h,5bh,7fh,1ah,00h,05h
+                       3     ; E char I:60h = 0D4h,0CCh,0C1h,0AFh,092h,054h,016h,001h
+                       4     
+0000                   5     ORG 0H
+0000 020100            6     LJMP MAIN
+0100                   7     ORG 100H
+0100                   8     MAIN:
+0100 3130              9     CALL SORT
+0102 80FE             10     HERE: SJMP HERE
+0130                  11     ORG 130H
+                      12     ; *****************
+0130                  13     SORT:
+                      14     ; ADD YOUR CODE HERE
+0130 7C07             15     MOV R4,#07H;EARLIER 8 ARRAY SHIFTED 1 UNIT TOWARDS RIGHT
+0132                  16     OUTER_LOOP :
+0132 7B07             17     MOV R3,#07H;EARLIER 8 ARRAY SHIFTED 1 UNIT TOWARDS RIGHT
+0134 7860             18     MOV R0,#60H 
+0136                  19     INNER_LOOP :
+0136 E6               20     MOV A,@R0 
+0137 F5F0             21     MOV B,A   
+0139 08               22     INC R0
+013A E6               23     MOV A ,@R0 
+                      24     
+                      25     ; INC R0 
+                      26     ; MOV B,@R0 
+013B B5F000           27     CJNE A,B,CONTINUE ; if A<B then carry set 1, A is i+1 address value and B is i address value
+                      28     ; CJNE B,A,CONTINUE GIVING SYNTAX ERROR
+013E                  29     CONTINUE:
+013E 5005             30     JNC EQUAL
+0140 A6F0             31     MOV @R0,B
+0142 18               32     DEC R0
+0143 F6               33     MOV @R0,A 
+0144 08               34     INC R0     
+0145                  35     EQUAL :
+0145 DBEF             36     DJNZ R3, INNER_LOOP
+0147 DCE9             37     DJNZ R4, OUTER_LOOP
+                      38     
+0149 7860             39     MOV R0,#60H 
+014B 7970             40     MOV R1,#70H 
+014D 7E08             41     MOV R6,#08H
+                      42     
+014F                  43     ANSWER:
+                      44     ; MOV @R1,@R0             invalid    
+014F E6               45     MOV A,@R0                ;try to work with R0 and R1
+0150 F7               46     MOV @R1,A    ;THIS TYPE OF SYNTAX IS ONLY VALID FOR R0 AND R1            
+                      47     ; MOV A,@R4                ;GIVING SYNTAX ERROR
+                      48     ; MOV @R5,A    THIS TYPE OF SYNTAX IS ONLY VALID FOR R0 AND R1            
+0151 08               49     INC R0
+0152 09               50     INC R1    
+0153 DEFA             51     DJNZ R6, ANSWER
+0155 22               52     RET
+                      53     END
+                              
+                              
+A51 MACRO ASSEMBLER  Q3                                                                   01/16/2023 14:28:12 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ANSWER . . . . . .  C ADDR   014FH   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+CONTINUE . . . . .  C ADDR   013EH   A   
+EQUAL. . . . . . .  C ADDR   0145H   A   
+HERE . . . . . . .  C ADDR   0102H   A   
+INNER_LOOP . . . .  C ADDR   0136H   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+OUTER_LOOP . . . .  C ADDR   0132H   A   
+SORT . . . . . . .  C ADDR   0130H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

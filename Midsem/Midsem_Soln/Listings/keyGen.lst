@@ -1,0 +1,201 @@
+A51 MACRO ASSEMBLER  KEYGEN                                                               02/13/2023 10:11:06 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\keyGen.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE keyGen.asm SET(SMALL) DEBUG PRINT(.\Listings\keyGen.lst) OBJECT(.\Objec
+                      ts\keyGen.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+0000                   1     org 00h
+0000 020100            2     ljmp MAIN
+0100                   3     org 100h
+0100                   4     MAIN:
+                       5                     
+0100 7571AD            6                     mov 71h,#173  
+0103 7570D8            7                     mov 70h, #216  
+                       8                     
+0106 7A00              9                     mov r2,#00h
+0108 0A               10     above:  inc r2
+0109 E570             11                     mov a, 70h
+010B 8AF0             12                     mov b,r2
+010D A4               13                     mul ab
+010E 85F060           14                     mov 60h,b
+0111 F561             15                     mov 61h,a
+0113 756200           16                     mov 62h,#00h
+0116 756301           17                     mov 63h,#01h
+0119 3139             18                     CALL ADD_16 
+011B 315C             19                     CALL BA_mod_r0
+011D 70E9             20                     JNZ above
+                      21                     
+011F 85F072           22                     mov 72h,b  
+                      23                     
+                      24     ;For Displaying on board
+                      25     ;Puput 5sec and Pause 1sec
+0122 E572             26                     mov a,72h
+0124 F590             27                     mov P1,a
+0126 31AA             28                     CALL DELAY_5s
+0128 759000           29                     mov P1, #0
+012B 319F             30                     CALL DELAY_1s
+012D C4               31                     swap a
+012E F590             32                     mov P1,a
+0130 31AA             33                     CALL DELAY_5s
+0132 759000           34                     mov P1, #0
+0135 319F             35                     CALL DELAY_1s
+                      36                     
+                      37                     
+0137 80FE             38                     Here: SJMP Here
+                      39             
+                      40     ;------------------------------------------------------------------------------------------
+                             --------------       
+                      41     
+                      42     ;------------------------------------------------------------------------------------------
+                             --------------       
+                      43     
+                      44     ;------------------------------------------------------------------------------------------
+                             --------------
+                      45     
+                      46     
+                      47     
+0139 AB60             48     ADD_16: mov r3,60h 
+013B AC61             49                     mov r4,61h
+013D AD62             50                     mov r5,62h 
+013F AE63             51                     mov r6,63h
+0141 EC               52                     mov a,r4
+0142 2E               53                     add a,r6
+0143 F574             54                     mov 74h,a   
+A51 MACRO ASSEMBLER  KEYGEN                                                               02/13/2023 10:11:06 PAGE     2
+
+0145 EB               55                     mov a,r3
+0146 3D               56                     addc a,r5
+0147 F573             57                     mov 73h,a  
+                      58                     
+0149 22               59     RET     
+                      60     ;------------------------------------------------------------------------------------------
+                             --------------
+                      61     
+                      62     
+                      63     
+014A                  64     SUB_16: 
+014A AB60             65                     mov r3,60h 
+014C AC61             66                     mov r4,61h
+014E AD62             67                     mov r5,62h 
+0150 AE63             68                     mov r6,63h
+0152 EC               69                     mov a,r4
+0153 C3               70                     clr c
+0154 9E               71                     subb a,r6
+0155 F573             72                     mov 73h,a   
+0157 EB               73                     mov a,r3
+0158 9D               74                     subb a,r5
+0159 F574             75                     mov 74h,a  
+015B 22               76     RET     
+                      77     ;------------------------------------------------------------------------------------------
+                             --------------       
+015C                  78     BA_mod_r0:
+                      79     
+                      80     
+015C C002             81                     push 02h
+015E 8573F0           82                     mov b,73h
+0161 E574             83                     mov a,74h
+0163 A871             84                     mov r0, 71h
+0165 7A00             85                     mov r2,#00h
+0167 85F060           86                     mov 60h,b
+016A F561             87                     mov 61h,a
+016C 756200           88                     mov 62h,#00h
+016F 8863             89                     mov 63h,r0
+                      90                     
+0171 0A               91     up1:    inc r2
+0172 314A             92                     CALL SUB_16
+0174 857460           93                     mov 60h,74h
+0177 857361           94                     mov 61h,73h
+017A E574             95                     mov a,74h
+017C B400F2           96                     cjne a,#00h,up1
+017F E573             97                     mov a,73h
+0181 98               98                     subb a,r0
+0182 50ED             99                     jnc up1
+0184 E573            100                     mov a,73h
+0186 8AF0            101                     mov b,r2
+0188 D002            102                     pop 02h
+018A 22              103     RET
+                     104     ;------------------------------------------------------------------------------------------
+                             --------------               
+018B                 105     DELAY_250us:
+018B C000            106     push 00h
+018D 78FA            107     mov r0,#0fah
+018F                 108     back1:
+018F D8FE            109             djnz r0,back1
+0191 D000            110     pop 00h
+0193 22              111     RET
+                     112     
+0194                 113     DELAY_10ms:
+0194 C000            114     push 00h
+0196 7828            115     mov r0,#40
+0198                 116     back2:
+0198 318B            117             CALL DELAY_250us
+A51 MACRO ASSEMBLER  KEYGEN                                                               02/13/2023 10:11:06 PAGE     3
+
+019A D8FC            118             djnz r0,back2
+019C D000            119     pop 00h
+019E 22              120     RET
+                     121     
+019F                 122     DELAY_1s: 
+019F C000            123     push 00h
+01A1 7864            124     mov r0,#100
+01A3                 125     back3:
+01A3 3194            126             CALL DELAY_10ms
+01A5 D8FC            127             djnz r0,back3
+01A7 D000            128     pop 00h
+01A9 22              129     RET
+                     130     
+01AA                 131     DELAY_5s: 
+01AA C000            132     push 00h
+01AC 7805            133     mov r0,#5
+01AE                 134     back4:
+01AE 319F            135             CALL DELAY_1s
+01B0 D8FC            136             djnz r0,back4
+01B2 D000            137     pop 00h
+01B4 22              138     RET
+                     139     
+01B5                 140     DELAY_10s: 
+01B5 C000            141     push 00h
+01B7 780A            142     mov r0,#10
+01B9                 143     back5:
+01B9 319F            144             CALL DELAY_1s
+01BB D8FC            145             djnz r0,back5
+01BD D000            146     pop 00h
+01BF 22              147     RET
+                     148     END
+A51 MACRO ASSEMBLER  KEYGEN                                                               02/13/2023 10:11:06 PAGE     4
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ABOVE. . . . . . .  C ADDR   0108H   A   
+ADD_16 . . . . . .  C ADDR   0139H   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+BACK1. . . . . . .  C ADDR   018FH   A   
+BACK2. . . . . . .  C ADDR   0198H   A   
+BACK3. . . . . . .  C ADDR   01A3H   A   
+BACK4. . . . . . .  C ADDR   01AEH   A   
+BACK5. . . . . . .  C ADDR   01B9H   A   
+BA_MOD_R0. . . . .  C ADDR   015CH   A   
+DELAY_10MS . . . .  C ADDR   0194H   A   
+DELAY_10S. . . . .  C ADDR   01B5H   A   
+DELAY_1S . . . . .  C ADDR   019FH   A   
+DELAY_250US. . . .  C ADDR   018BH   A   
+DELAY_5S . . . . .  C ADDR   01AAH   A   
+HERE . . . . . . .  C ADDR   0137H   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+SUB_16 . . . . . .  C ADDR   014AH   A   
+UP1. . . . . . . .  C ADDR   0171H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

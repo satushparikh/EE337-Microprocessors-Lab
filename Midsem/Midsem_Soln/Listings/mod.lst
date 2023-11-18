@@ -1,0 +1,92 @@
+A51 MACRO ASSEMBLER  MOD                                                                  02/13/2023 15:07:28 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\mod.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE mod.a51 SET(SMALL) DEBUG PRINT(.\Listings\mod.lst) OBJECT(.\Objects\mod
+                      .obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+0000                   1     org 00h
+0000 020100            2     ljmp MAIN
+0100                   3     org 100h
+0100                   4     MAIN:
+                       5                     
+0100 75730C            6                     mov 73h, #0CH
+0103 757435            7                     mov 74h, #35H
+0106 7575F7            8                     mov 75h, #0F7H
+                       9                     
+                      10                     
+0109 311F             11             CALL BA_mod_r0
+                      12                     
+                      13                     
+010B 80FE             14                     Here: SJMP Here
+                      15                     
+                      16     ;------------------------------------------------------------------------------------------
+                             --------------
+                      17     
+                      18     
+                      19     
+010D                  20     SUB_16: 
+010D AB60             21                     mov r3,60h 
+010F AC61             22                     mov r4,61h
+0111 AD62             23                     mov r5,62h 
+0113 AE63             24                     mov r6,63h
+0115 EC               25                     mov a,r4
+0116 C3               26                     clr c
+0117 9E               27                     subb a,r6
+0118 F566             28                     mov 66h,a   
+011A EB               29                     mov a,r3
+011B 9D               30                     subb a,r5
+011C F565             31                     mov 65h,a  
+011E 22               32     RET     
+                      33     
+                      34     ;------------------------------------------------------------------------------------------
+                             --------------       
+011F                  35     BA_mod_r0:
+                      36     
+011F 8573F0           37                     mov b, 73h
+0122 E574             38                     mov a, 74h
+0124 A875             39                     mov r0, 75h
+                      40     
+0126 85F060           41                     mov 60h,b
+0129 F561             42                     mov 61h,a
+012B 756200           43                     mov 62h,#00h
+012E 8863             44                     mov 63h,r0
+                      45                     
+0130 310D             46     up1:    CALL SUB_16
+0132 856560           47                     mov 60h,65h
+0135 856661           48                     mov 61h,66h
+0138 E565             49                     mov a,65h
+013A B400F3           50                     cjne a,#00h,up1
+013D E566             51                     mov a,66h
+013F 98               52                     subb a,r0
+0140 50EE             53                     jnc up1
+0142 E566             54                     mov a,66h
+0144 F573             55             mov 73h, a              
+A51 MACRO ASSEMBLER  MOD                                                                  02/13/2023 15:07:28 PAGE     2
+
+0146 22               56     RET
+                      57     
+                      58     END
+A51 MACRO ASSEMBLER  MOD                                                                  02/13/2023 15:07:28 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+B. . . . . . . . .  D ADDR   00F0H   A   
+BA_MOD_R0. . . . .  C ADDR   011FH   A   
+HERE . . . . . . .  C ADDR   010BH   A   
+MAIN . . . . . . .  C ADDR   0100H   A   
+SUB_16 . . . . . .  C ADDR   010DH   A   
+UP1. . . . . . . .  C ADDR   0130H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

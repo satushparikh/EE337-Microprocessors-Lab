@@ -1,0 +1,39 @@
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    01/28/2023  10:50:13  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.4.0, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE .\Objects\Q2.obj TO .\Objects\L3Q2 PRINT (.\Listings\L3Q2.m51) RAMSIZE (256)
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\Q2.obj (Q2)
+
+
+LINK MAP OF MODULE:  .\Objects\L3Q2 (Q2)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0054H     ABSOLUTE     
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\L3Q2 (Q2)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        Q2
+  -------         ENDMOD        Q2
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0004H BYTE ( 0%) *
+******************************************************************************
+
+Program Size: data=8.0 xdata=0 code=84
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
